@@ -27,7 +27,8 @@ project/assembly_name="be late for work"
 
 folder_colors={
 "res://music/": "orange",
-"res://scripts/": "yellow"
+"res://scripts/": "yellow",
+"res://textures/": "purple"
 }
 
 [physics]
