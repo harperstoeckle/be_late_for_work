@@ -4,6 +4,9 @@ extends Node2D
 const SUBDIVISIONS_PER_BEAT: int = 4
 
 
+@export var metronome_pattern: Array[int] = [4, 2, 2]
+
+
 @onready var _music_player: AudioStreamPlayer = $MusicPlayer
 @onready var _metronome_player: AudioStreamPlayer = $MetronomePlayer
 
@@ -30,5 +33,13 @@ func _unhandled_input(event: InputEvent) -> void:
 
 # Handle logic for the passing of the nth subdivision.
 func _handle_subdivision(n: int) -> void:
-	if n % SUBDIVISIONS_PER_BEAT == 0:
-		_metronome_player.play()
+	if not metronome_pattern: return
+
+	var subdivs_per_metronome_cycle: int = metronome_pattern.reduce(func (a: int, b: int) -> int: return a + b, 0)
+	var cur_subdiv_in_cycle := n % subdivs_per_metronome_cycle
+
+	var subdiv_target := 0
+	for i in metronome_pattern:
+		if subdiv_target == cur_subdiv_in_cycle:
+			_metronome_player.play()
+		subdiv_target += i
