@@ -11,8 +11,13 @@ config_version=5
 [application]
 
 config/name="be late for work"
+run/main_scene="uid://bn0s8bjt7jqen"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
+
+[audio]
+
+buses/default_bus_layout="uid://dmnf25j3bacf7"
 
 [display]
 
@@ -26,7 +31,9 @@ project/assembly_name="be late for work"
 [file_customization]
 
 folder_colors={
+"res://audio/": "green",
 "res://music/": "orange",
+"res://scenes/": "teal",
 "res://scripts/": "yellow",
 "res://textures/": "purple"
 }
