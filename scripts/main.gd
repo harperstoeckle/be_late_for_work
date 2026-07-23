@@ -9,6 +9,8 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 
 @onready var _music_player: AudioStreamPlayer = $MusicPlayer
 @onready var _metronome_player: AudioStreamPlayer = $MetronomePlayer
+@onready var _beep_player: AudioStreamPlayer = $BeepPlayer
+@onready var _snooze_player: AudioStreamPlayer = $SnoozePlayer
 
 
 var _next_subdivision_to_handle: int = 0
@@ -30,6 +32,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
 		_next_subdivision_to_handle = 0
 		_music_player.play()
+	elif event.is_action_pressed("snooze"):
+		_snooze_player.play(0.15)
 
 # Handle logic for the passing of the nth subdivision.
 func _handle_subdivision(n: int) -> void:
