@@ -15,7 +15,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @export var metronome_pattern: Array[int] = [4, 2, 2]
 @export var alarm_beep_pattern: Array[int] = [0, 2, 6, 8]
 @export var alarm_input_subdivision: int = 12
-@export var alarm_start_subdivisions: Array[int] = [2 * 4 * 4, 4 * 4 * 4 + 2]
+@export var alarm_start_subdivisions: Array[int] = [1 * 4 * 4, 2 * 4 * 4 + 2, 3 * 4 * 4, 3 * 4 * 4 + 12]
 ## Maximum time before a subdivision is reached where an input is still considered to have landed on that subdivision.
 @export var pre_subdivision_input_leeway: float = 0.05
 ## Maximum time after a subdivision is reached where an input is still considered to have landed on that subdivision.
