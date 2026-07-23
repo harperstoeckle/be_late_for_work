@@ -26,10 +26,21 @@ func _process(_delta: float) -> void:
 
 	var subdiv_duration: float = 60.0 / stream.bpm / SUBDIVISIONS_PER_BEAT
 	var cur_subdivision: int = floori(_music_player.get_playback_position() / subdiv_duration)
+	var subdivs_in_stream: int = stream.beat_count * SUBDIVISIONS_PER_BEAT
 
-	for i in range(_next_subdivision_to_handle, cur_subdivision + 1):
-		_handle_subdivision(i)
-		_next_subdivision_to_handle = i + 1
+	# At most, `_next_subdivision_to_handle` (modulo `subdivs_in_stream`) should be one above
+	# `cur_subdivision`if we just handled the current subdivision and haven't moved on yet. If
+	# `cur_subdivision` is less than that, then the music has looped back to an earlier position,
+	# which means we need to first handle all remaining subdivisions from the previous loop.
+	if cur_subdivision + 1 < _next_subdivision_to_handle % subdivs_in_stream:
+		for i in range(_next_subdivision_to_handle % subdivs_in_stream, subdivs_in_stream):
+			_handle_subdivision(_next_subdivision_to_handle)
+			_next_subdivision_to_handle += 1
+
+	# We do this modulo the subdivisions in the stream to allow looping to work.
+	for i in range(_next_subdivision_to_handle % subdivs_in_stream, (cur_subdivision + 1) % subdivs_in_stream):
+		_handle_subdivision(_next_subdivision_to_handle)
+		_next_subdivision_to_handle += 1
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
@@ -40,6 +51,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 # Handle logic for the passing of the nth subdivision.
 func _handle_subdivision(n: int) -> void:
+	if n % (4 * SUBDIVISIONS_PER_BEAT) == 0:
+		print("Measure %s" % (n / (4 * SUBDIVISIONS_PER_BEAT)))
 	if not metronome_pattern: return
 
 	var subdivs_per_metronome_cycle: int = metronome_pattern.reduce(func (a: int, b: int) -> int: return a + b, 0)
