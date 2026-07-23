@@ -7,6 +7,8 @@
 [ext_resource type="AudioStream" uid="uid://d3k8a2chpsol5" path="res://audio/525179__sophia_c__plastic-impact-2-hit-with-axe.wav" id="5_tbgi4"]
 [ext_resource type="AudioStream" uid="uid://drxytpokc1apa" path="res://audio/193676__deleted_user_2814878__gatedenied.wav" id="6_tefeu"]
 [ext_resource type="Texture2D" uid="uid://dpr8arjjs4whb" path="res://textures/wallpaper.png" id="7_o6xl0"]
+[ext_resource type="Texture2D" uid="uid://c1nm57vw33doy" path="res://textures/nightstand.png" id="8_85g3d"]
+[ext_resource type="Texture2D" uid="uid://bjx12s0xev8j4" path="res://textures/alarm_clock_base.png" id="8_tipki"]
 
 [node name="Main" type="Node2D" unique_id=1497394274]
 script = ExtResource("1_o5qli")
@@ -49,3 +51,13 @@ scale = Vector2(0.5, 0.5)
 mouse_filter = 2
 texture = ExtResource("7_o6xl0")
 stretch_mode = 1
+
+[node name="Nightstand" type="Sprite2D" parent="." unique_id=1406322094]
+position = Vector2(700.4, 321.4)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("8_85g3d")
+
+[node name="AlarmClockBase" type="Sprite2D" parent="." unique_id=1383037053]
+position = Vector2(668.4, 265.4)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("8_tipki")
