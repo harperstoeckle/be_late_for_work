@@ -5,6 +5,8 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 
 
 @export var metronome_pattern: Array[int] = [4, 2, 2]
+@export var alarm_beep_pattern: Array[int] = [0, 2, 6, 8]
+@export var alarm_start_subdivisions: Array[int] = [2 * 4 * 4, 4 * 4 * 4 + 2]
 
 
 @onready var _music_player: AudioStreamPlayer = $MusicPlayer
@@ -14,6 +16,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 
 
 var _next_subdivision_to_handle: int = 0
+var _alarm_start_subdiv: int = -1
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -47,3 +50,14 @@ func _handle_subdivision(n: int) -> void:
 		if subdiv_target == cur_subdiv_in_cycle:
 			_metronome_player.play()
 		subdiv_target += i
+
+	if n in alarm_start_subdivisions:
+		_alarm_start_subdiv = n
+
+	_handle_alarm(n)
+
+func _handle_alarm(subdiv: int) -> void:
+	if _alarm_start_subdiv < 0: return
+
+	if subdiv - _alarm_start_subdiv in alarm_beep_pattern:
+		_beep_player.play()
