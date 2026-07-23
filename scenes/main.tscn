@@ -6,6 +6,7 @@
 [ext_resource type="AudioStream" uid="uid://dvth52y5t68sx" path="res://audio/608881__leetsounds__beep.wav" id="4_jyhfs"]
 [ext_resource type="AudioStream" uid="uid://d3k8a2chpsol5" path="res://audio/525179__sophia_c__plastic-impact-2-hit-with-axe.wav" id="5_tbgi4"]
 [ext_resource type="AudioStream" uid="uid://drxytpokc1apa" path="res://audio/193676__deleted_user_2814878__gatedenied.wav" id="6_tefeu"]
+[ext_resource type="Texture2D" uid="uid://dpr8arjjs4whb" path="res://textures/wallpaper.png" id="7_o6xl0"]
 
 [node name="Main" type="Node2D" unique_id=1497394274]
 script = ExtResource("1_o5qli")
@@ -38,3 +39,13 @@ stream = ExtResource("6_tefeu")
 volume_db = -10.0
 max_polyphony = 4
 bus = &"Sound Effects"
+
+[node name="Wallpaper" type="TextureRect" parent="." unique_id=723137512]
+offset_left = -94.0
+offset_top = -113.0
+offset_right = 2624.0
+offset_bottom = 1615.0
+scale = Vector2(0.5, 0.5)
+mouse_filter = 2
+texture = ExtResource("7_o6xl0")
+stretch_mode = 1

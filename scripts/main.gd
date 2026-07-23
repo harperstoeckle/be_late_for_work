@@ -9,13 +9,20 @@ enum InputAccuracy
 }
 
 
+# This should maybe change depending on the music, but there's not time for that.
+const BEATS_PER_MEASURE: int = 4
 const SUBDIVISIONS_PER_BEAT: int = 4
 
 
 @export var metronome_pattern: Array[int] = [4, 2, 2]
 @export var alarm_beep_pattern: Array[int] = [0, 2, 6, 8]
 @export var alarm_input_subdivision: int = 12
-@export var alarm_start_subdivisions: Array[int] = [1 * 4 * 4, 2 * 4 * 4 + 2, 3 * 4 * 4, 3 * 4 * 4 + 12]
+@export var alarm_start_subdivisions: Array[int] = [
+	_subdiv(1),
+	_subdiv(2, 0, 2),
+	_subdiv(3),
+	_subdiv(3, 3),
+]
 ## Maximum time before a subdivision is reached where an input is still considered to have landed on that subdivision.
 @export var pre_subdivision_input_leeway: float = 0.05
 ## Maximum time after a subdivision is reached where an input is still considered to have landed on that subdivision.
@@ -134,3 +141,6 @@ func _get_accuracy(target_subdivision: int, input_total_playback_time: float) ->
 		return InputAccuracy.LATE
 	else:
 		return InputAccuracy.GOOD
+
+func _subdiv(measure: int, beat: int = 0, subdiv: int = 0) -> int:
+	return (measure * BEATS_PER_MEASURE + beat) * SUBDIVISIONS_PER_BEAT + subdiv
