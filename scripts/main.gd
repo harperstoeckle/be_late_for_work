@@ -16,7 +16,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 
 @export var metronome_pattern: Array[int] = [4, 2, 2]
 @export var alarm_beep_pattern: Array[int] = [0, 2, 6, 8]
-@export var alarm_input_subdivision: int = 12
+@export var alarm_input_subdivision: int = 10
 @export var alarm_start_subdivisions: Array[int] = [
 	_subdiv(1),
 	_subdiv(2, 0, 2),
