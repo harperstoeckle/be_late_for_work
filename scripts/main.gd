@@ -27,6 +27,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @export var pre_subdivision_input_leeway: float = 0.05
 ## Maximum time after a subdivision is reached where an input is still considered to have landed on that subdivision.
 @export var post_subdivision_input_leeway: float = 0.05
+@export var arm_retract_duration: float = 0.2
 
 
 @onready var _music_player: AudioStreamPlayer = $MusicPlayer
@@ -34,12 +35,22 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @onready var _snooze_player: AudioStreamPlayer = $SnoozePlayer
 @onready var _miss_player: AudioStreamPlayer = $MissPlayer
 @onready var _alarm_clock: AlarmClock = $AlarmClock
+@onready var _arm_border: Line2D = %ArmBorder
+@onready var _arm_inside: Line2D = %ArmInside
+@onready var _default_hand_ref: Node2D = %DefaultHandRef
+
+@onready var _global_hand_pos := _arm_border.to_global(_arm_border.points[1]) :
+	set(v):
+		_global_hand_pos = v
+		_arm_border.set_point_position(1, _arm_border.to_local(_global_hand_pos))
+		_arm_inside.set_point_position(1, _arm_inside.to_local(_global_hand_pos))
 
 
 var _next_subdivision_to_handle: int = 0
 # Number of times the music has fully played and looped back around.
 var _num_music_loops: int = 0
 var _alarm_start_subdiv: int = -1
+var _arm_tween: Tween
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -73,6 +84,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		_num_music_loops = 0
 		_music_player.play()
 	elif event.is_action_pressed("snooze"):
+		if _arm_tween: _arm_tween.kill()
+		_arm_tween = get_tree().create_tween()
+		_global_hand_pos = _alarm_clock.global_position
+		_arm_tween.tween_property(self, "_global_hand_pos", _default_hand_ref.global_position, arm_retract_duration) \
+			.set_ease(Tween.EASE_IN)
+
 		if _alarm_start_subdiv >= 0:
 			var cur_total_playback_time := _get_total_playback_time()
 			match _get_accuracy(_alarm_start_subdiv + alarm_input_subdivision, cur_total_playback_time):

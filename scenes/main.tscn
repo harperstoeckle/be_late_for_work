@@ -66,3 +66,28 @@ texture = ExtResource("10_choun")
 
 [node name="AlarmClock" parent="." unique_id=907858564 instance=ExtResource("9_85g3d")]
 position = Vector2(822.00006, 321)
+
+[node name="Arm" type="Node2D" parent="." unique_id=595817522]
+
+[node name="ArmBorder" type="Line2D" parent="Arm" unique_id=1857980103]
+unique_name_in_owner = true
+points = PackedVector2Array(602, 283, 646, 377)
+width = 30.0
+default_color = Color(0.09411765, 0.10980392, 0.21960784, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="ArmInside" type="Line2D" parent="Arm" unique_id=922753401]
+unique_name_in_owner = true
+points = PackedVector2Array(602, 283, 646, 378)
+width = 20.0
+default_color = Color(0.039215688, 0.27450982, 0.5176471, 1)
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="DefaultHandRef" type="Node2D" parent="Arm" unique_id=1579630850]
+unique_name_in_owner = true
+position = Vector2(646, 378)
