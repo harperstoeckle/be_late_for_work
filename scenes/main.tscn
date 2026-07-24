@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://dpr8arjjs4whb" path="res://textures/wallpaper.png" id="7_o6xl0"]
 [ext_resource type="Texture2D" uid="uid://c1nm57vw33doy" path="res://textures/nightstand.png" id="8_85g3d"]
 [ext_resource type="Texture2D" uid="uid://bjx12s0xev8j4" path="res://textures/alarm_clock_base.png" id="8_tipki"]
+[ext_resource type="Texture2D" uid="uid://c01vnjc1o5o3o" path="res://textures/bed_base.png" id="10_choun"]
 
 [node name="Main" type="Node2D" unique_id=1497394274]
 script = ExtResource("1_o5qli")
@@ -54,18 +55,23 @@ stretch_mode = 1
 
 [node name="Floor" type="ColorRect" parent="." unique_id=88885220]
 offset_left = -286.0
-offset_top = 296.0
+offset_top = 362.0
 offset_right = 1413.0
 offset_bottom = 1656.0
 mouse_filter = 2
 color = Color(0.6431373, 0.32156864, 0.34901962, 1)
 
 [node name="Nightstand" type="Sprite2D" parent="." unique_id=1406322094]
-position = Vector2(700.4, 321.4)
+position = Vector2(642.4, 375.4)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("8_85g3d")
 
 [node name="AlarmClockBase" type="Sprite2D" parent="." unique_id=1383037053]
-position = Vector2(668.4, 265.4)
+position = Vector2(610.4, 319.4)
 scale = Vector2(0.3, 0.3)
 texture = ExtResource("8_tipki")
+
+[node name="BedBase" type="Sprite2D" parent="." unique_id=540930035]
+position = Vector2(383, 464)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("10_choun")
