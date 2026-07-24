@@ -27,7 +27,8 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @export var pre_subdivision_input_leeway: float = 0.05
 ## Maximum time after a subdivision is reached where an input is still considered to have landed on that subdivision.
 @export var post_subdivision_input_leeway: float = 0.05
-@export var arm_retract_duration: float = 0.2
+@export var arm_retract_delay: float = 0.1
+@export var arm_retract_duration: float = 0.1
 @export var snooze_button_hand_offset: Vector2 = Vector2(20, -20)
 
 
@@ -102,7 +103,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		_arm_tween = get_tree().create_tween()
 		_global_hand_pos = _alarm_clock.global_position + snooze_button_hand_offset
 		_arm_tween.tween_property(self, "_global_hand_pos", _default_hand_ref.global_position, arm_retract_duration) \
-			.set_ease(Tween.EASE_IN)
+			.set_ease(Tween.EASE_IN) \
+			.set_delay(arm_retract_delay)
 
 		if _alarm_start_subdiv >= 0:
 			var cur_total_playback_time := _get_total_playback_time()
