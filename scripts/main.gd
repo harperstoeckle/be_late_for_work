@@ -113,6 +113,10 @@ func _unhandled_input(event: InputEvent) -> void:
 					_miss_player.play()
 		else:
 			_miss_player.play()
+	elif event.is_action_pressed("ui_up"):
+		_save_checkpoint()
+	elif event.is_action_pressed("ui_down"):
+		_load_checkpoint()
 
 # Handle logic for the passing of the nth subdivision.
 func _handle_subdivision(n: int) -> void:
@@ -179,6 +183,9 @@ func _save_checkpoint() -> void:
 
 func _load_checkpoint() -> void:
 	_num_music_loops = _checkpoint_num_loops
-	_next_subdivision_to_handle = _next_subdivision_to_handle
+	_next_subdivision_to_handle = _checkpoint_next_subdivision
+	_alarm_start_subdiv = -1
 
-	var music_subdiv: int = max(0, _next_subdivision_to_handle - 1)
+	if _music_beat_count > 0:
+		var music_subdiv: int = max(0, _next_subdivision_to_handle - 1) % (_music_beat_count * SUBDIVISIONS_PER_BEAT)
+		_music_player.seek(music_subdiv * 60.0 / _music_bpm / SUBDIVISIONS_PER_BEAT)
