@@ -52,16 +52,29 @@ var _next_subdivision_to_handle: int = 0
 var _num_music_loops: int = 0
 var _alarm_start_subdiv: int = -1
 var _arm_tween: Tween
+var _music_bpm: int = 120
+var _music_beat_count: int = 0
+
+var _checkpoint_next_subdivision: int = 0
+var _checkpoint_num_loops: int = 0
+
+
+func _ready() -> void:
+	var stream := _music_player.stream as AudioStreamOggVorbis
+	if stream:
+		_music_bpm = max(stream.bpm, 1)
+		_music_beat_count = stream.beat_count
+		if _music_beat_count <= 0:
+			_music_beat_count = floori(stream.get_length() / 60.0 * _music_bpm)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
-	var stream := _music_player.stream as AudioStreamOggVorbis
-	if not _music_player.playing or not stream: return
+	if not _music_player.playing: return
 
-	var subdiv_duration: float = 60.0 / stream.bpm / SUBDIVISIONS_PER_BEAT
+	var subdiv_duration: float = 60.0 / _music_bpm / SUBDIVISIONS_PER_BEAT
 	var cur_subdivision: int = floori(_music_player.get_playback_position() / subdiv_duration)
-	var subdivs_in_stream: int = stream.beat_count * SUBDIVISIONS_PER_BEAT
+	var subdivs_in_stream: int = _music_beat_count * SUBDIVISIONS_PER_BEAT
 
 	# At most, `_next_subdivision_to_handle` (modulo `subdivs_in_stream`) should be one above
 	# `cur_subdivision`if we just handled the current subdivision and haven't moved on yet. If
@@ -132,8 +145,8 @@ func _get_total_playback_time() -> float:
 	var stream := _music_player.stream as AudioStreamOggVorbis
 	if not stream: return 0.0
 
-	var subdiv_duration: float = 60.0 / stream.bpm / SUBDIVISIONS_PER_BEAT
-	var stream_loop_duration: float = 60.0 / stream.bpm * stream.beat_count
+	var subdiv_duration: float = 60.0 / _music_bpm / SUBDIVISIONS_PER_BEAT
+	var stream_loop_duration: float = 60.0 / _music_bpm * _music_beat_count
 
 	var subdiv_total_playback_time: float = max(0, _next_subdivision_to_handle - 1) * subdiv_duration
 	# This might not be wrong if we just looped and have not handled the loop yet in `_process`.
@@ -147,10 +160,7 @@ func _get_total_playback_time() -> float:
 
 # Used to determine whether an input successfully hit a certain beat subdivision.
 func _get_accuracy(target_subdivision: int, input_total_playback_time: float) -> InputAccuracy:
-	var stream := _music_player.stream as AudioStreamOggVorbis
-	if not stream: return InputAccuracy.GOOD
-
-	var subdiv_duration: float = 60.0 / stream.bpm / SUBDIVISIONS_PER_BEAT
+	var subdiv_duration: float = 60.0 / _music_bpm / SUBDIVISIONS_PER_BEAT
 	var target_total_playback_time: float = target_subdivision * subdiv_duration
 
 	if input_total_playback_time < target_total_playback_time - pre_subdivision_input_leeway:
@@ -162,3 +172,13 @@ func _get_accuracy(target_subdivision: int, input_total_playback_time: float) ->
 
 func _subdiv(measure: int, beat: int = 0, subdiv: int = 0) -> int:
 	return (measure * BEATS_PER_MEASURE + beat) * SUBDIVISIONS_PER_BEAT + subdiv
+
+func _save_checkpoint() -> void:
+	_checkpoint_num_loops = _num_music_loops
+	_checkpoint_next_subdivision = _next_subdivision_to_handle
+
+func _load_checkpoint() -> void:
+	_num_music_loops = _checkpoint_num_loops
+	_next_subdivision_to_handle = _next_subdivision_to_handle
+
+	var music_subdiv: int = max(0, _next_subdivision_to_handle - 1)
