@@ -68,6 +68,8 @@ func _ready() -> void:
 		if _music_beat_count <= 0:
 			_music_beat_count = floori(stream.get_length() / 60.0 * _music_bpm)
 
+	_alarm_clock.set_indicator_text("SNOOZING")
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
