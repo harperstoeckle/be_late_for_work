@@ -10,6 +10,8 @@
 [ext_resource type="Texture2D" uid="uid://c1nm57vw33doy" path="res://textures/nightstand.png" id="8_85g3d"]
 [ext_resource type="Texture2D" uid="uid://bjx12s0xev8j4" path="res://textures/alarm_clock_base.png" id="8_tipki"]
 [ext_resource type="Texture2D" uid="uid://c01vnjc1o5o3o" path="res://textures/bed_base.png" id="10_choun"]
+[ext_resource type="Script" uid="uid://bt1xo6t2h80c1" path="res://scripts/effect_spawner.gd" id="10_eb6dy"]
+[ext_resource type="PackedScene" uid="uid://co6v2hjfm2mh" path="res://scenes/effects/beep.tscn" id="11_trceg"]
 
 [node name="Main" type="Node2D" unique_id=1497394274]
 script = ExtResource("1_o5qli")
@@ -70,6 +72,12 @@ texture = ExtResource("8_85g3d")
 position = Vector2(610.4, 319.4)
 scale = Vector2(0.3, 0.3)
 texture = ExtResource("8_tipki")
+
+[node name="BeepEffectSpawner" type="Node2D" parent="." unique_id=1491709170]
+unique_name_in_owner = true
+position = Vector2(610, 345)
+script = ExtResource("10_eb6dy")
+scene = ExtResource("11_trceg")
 
 [node name="BedBase" type="Sprite2D" parent="." unique_id=540930035]
 position = Vector2(383, 464)
