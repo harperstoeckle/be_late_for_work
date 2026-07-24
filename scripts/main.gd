@@ -30,6 +30,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @export var arm_retract_delay: float = 0.1
 @export var arm_retract_duration: float = 0.1
 @export var snooze_button_hand_offset: Vector2 = Vector2(20, -20)
+@export var dialogue_time_per_character: float = 1 / 50.0
 
 
 @onready var _music_player: AudioStreamPlayer = $MusicPlayer
@@ -40,6 +41,8 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @onready var _arm_border: Line2D = %ArmBorder
 @onready var _arm_inside: Line2D = %ArmInside
 @onready var _default_hand_ref: Node2D = %DefaultHandRef
+@onready var _dialogue_box: PanelContainer = %DialogueBox
+@onready var _dialogue_label: RichTextLabel = %DialogueLabel
 
 @onready var _global_hand_pos := _arm_border.to_global(_arm_border.points[1]) :
 	set(v):
@@ -59,6 +62,8 @@ var _music_beat_count: int = 0
 var _checkpoint_next_subdivision: int = 0
 var _checkpoint_num_loops: int = 0
 
+var _time_since_current_dialogue_box_shown: float = 0.0
+
 
 func _ready() -> void:
 	var stream := _music_player.stream as AudioStreamOggVorbis
@@ -72,7 +77,11 @@ func _ready() -> void:
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	if _is_showing_dialogue() and not _is_dialogue_fully_visible():
+		_time_since_current_dialogue_box_shown += delta
+		_dialogue_label.visible_characters = min(_dialogue_label.get_total_character_count(), _time_since_current_dialogue_box_shown / dialogue_time_per_character)
+
 	if not _music_player.playing: return
 
 	var subdiv_duration: float = 60.0 / _music_bpm / SUBDIVISIONS_PER_BEAT
@@ -97,9 +106,16 @@ func _process(_delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
-		_next_subdivision_to_handle = 0
-		_num_music_loops = 0
-		_music_player.play()
+		if _is_showing_dialogue():
+			if not _is_dialogue_fully_visible():
+				# Skip dialogue if it's not finished being displayed.
+				_dialogue_label.visible_ratio = 1.0
+			else:
+				_continue_dialogue()
+		else:
+			_next_subdivision_to_handle = 0
+			_num_music_loops = 0
+			_music_player.play()
 	elif event.is_action_pressed("snooze"):
 		if _arm_tween: _arm_tween.kill()
 		_arm_tween = get_tree().create_tween()
@@ -193,3 +209,19 @@ func _load_checkpoint() -> void:
 	if _music_beat_count > 0:
 		var music_subdiv: int = max(0, _next_subdivision_to_handle - 1) % (_music_beat_count * SUBDIVISIONS_PER_BEAT)
 		_music_player.seek(music_subdiv * 60.0 / _music_bpm / SUBDIVISIONS_PER_BEAT)
+
+func _show_dialogue(text: String) -> void:
+	_dialogue_box.show()
+	_dialogue_label.text = text
+	_dialogue_label.visible_characters = 0
+	_time_since_current_dialogue_box_shown = 0.0
+
+func _is_showing_dialogue() -> bool:
+	return _dialogue_box.visible
+
+func _is_dialogue_fully_visible() -> bool:
+	return is_equal_approx(_dialogue_label.visible_ratio, 1.0)
+
+# Will close the dialogue box if no dialogue is left, or will go to the next one if it is available.
+func _continue_dialogue() -> void:
+	_dialogue_box.hide()
