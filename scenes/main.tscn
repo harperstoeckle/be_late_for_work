@@ -10,6 +10,22 @@
 [ext_resource type="PackedScene" uid="uid://dlnfp1yuddaim" path="res://scenes/alarm_clock.tscn" id="9_85g3d"]
 [ext_resource type="Texture2D" uid="uid://c01vnjc1o5o3o" path="res://textures/bed_base.png" id="10_choun"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_85g3d"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.09411765, 0.10980392, 0.21960784, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.90588236, 0.8901961, 0.78039217, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
 [node name="Main" type="Node2D" unique_id=1497394274]
 script = ExtResource("1_o5qli")
 
@@ -108,10 +124,12 @@ custom_minimum_size = Vector2(500, 100)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 8
+theme_override_styles/panel = SubResource("StyleBoxFlat_85g3d")
 
 [node name="DialogueLabel" type="RichTextLabel" parent="UILayer/MarginContainer/DialogueBox" unique_id=888116335]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/default_color = Color(0.90588236, 0.8901961, 0.78039217, 1)
 text = "My alarm is about to go off."
 visible_characters = 0
 visible_ratio = 0.0
