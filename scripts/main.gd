@@ -28,6 +28,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 ## Maximum time after a subdivision is reached where an input is still considered to have landed on that subdivision.
 @export var post_subdivision_input_leeway: float = 0.05
 @export var arm_retract_duration: float = 0.2
+@export var snooze_button_hand_offset: Vector2 = Vector2(20, -20)
 
 
 @onready var _music_player: AudioStreamPlayer = $MusicPlayer
@@ -86,7 +87,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("snooze"):
 		if _arm_tween: _arm_tween.kill()
 		_arm_tween = get_tree().create_tween()
-		_global_hand_pos = _alarm_clock.global_position
+		_global_hand_pos = _alarm_clock.global_position + snooze_button_hand_offset
 		_arm_tween.tween_property(self, "_global_hand_pos", _default_hand_ref.global_position, arm_retract_duration) \
 			.set_ease(Tween.EASE_IN)
 
