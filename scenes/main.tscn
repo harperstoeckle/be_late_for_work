@@ -3,32 +3,23 @@
 [ext_resource type="Script" uid="uid://bcq5ie2lvyknm" path="res://scripts/main.gd" id="1_o5qli"]
 [ext_resource type="AudioStream" uid="uid://b2k2v5uuuq5kl" path="res://music/a.ogg" id="2_0wfyh"]
 [ext_resource type="AudioStream" uid="uid://laoq50q70mre" path="res://audio/250552__druminfected__metronome.wav" id="3_sugp2"]
-[ext_resource type="AudioStream" uid="uid://dvth52y5t68sx" path="res://audio/608881__leetsounds__beep.wav" id="4_jyhfs"]
 [ext_resource type="AudioStream" uid="uid://d3k8a2chpsol5" path="res://audio/525179__sophia_c__plastic-impact-2-hit-with-axe.wav" id="5_tbgi4"]
 [ext_resource type="AudioStream" uid="uid://drxytpokc1apa" path="res://audio/193676__deleted_user_2814878__gatedenied.wav" id="6_tefeu"]
 [ext_resource type="Texture2D" uid="uid://dpr8arjjs4whb" path="res://textures/wallpaper.png" id="7_o6xl0"]
 [ext_resource type="Texture2D" uid="uid://c1nm57vw33doy" path="res://textures/nightstand.png" id="8_85g3d"]
-[ext_resource type="Texture2D" uid="uid://bjx12s0xev8j4" path="res://textures/alarm_clock_base.png" id="8_tipki"]
+[ext_resource type="PackedScene" uid="uid://dlnfp1yuddaim" path="res://scenes/alarm_clock.tscn" id="9_85g3d"]
 [ext_resource type="Texture2D" uid="uid://c01vnjc1o5o3o" path="res://textures/bed_base.png" id="10_choun"]
-[ext_resource type="Script" uid="uid://bt1xo6t2h80c1" path="res://scripts/effect_spawner.gd" id="10_eb6dy"]
-[ext_resource type="PackedScene" uid="uid://co6v2hjfm2mh" path="res://scenes/effects/beep.tscn" id="11_trceg"]
 
 [node name="Main" type="Node2D" unique_id=1497394274]
 script = ExtResource("1_o5qli")
 
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="." unique_id=1710577053]
 stream = ExtResource("2_0wfyh")
-volume_db = 7.0
+volume_db = 10.0
 bus = &"Music"
 
 [node name="MetronomePlayer" type="AudioStreamPlayer" parent="." unique_id=1175571940]
 stream = ExtResource("3_sugp2")
-volume_db = -25.0
-max_polyphony = 4
-bus = &"Sound Effects"
-
-[node name="BeepPlayer" type="AudioStreamPlayer" parent="." unique_id=949570266]
-stream = ExtResource("4_jyhfs")
 volume_db = -25.0
 max_polyphony = 4
 bus = &"Sound Effects"
@@ -64,22 +55,14 @@ mouse_filter = 2
 color = Color(0.6431373, 0.32156864, 0.34901962, 1)
 
 [node name="Nightstand" type="Sprite2D" parent="." unique_id=1406322094]
-position = Vector2(642.4, 375.4)
+position = Vector2(842.4, 375.4)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("8_85g3d")
 
-[node name="AlarmClockBase" type="Sprite2D" parent="." unique_id=1383037053]
-position = Vector2(610.4, 319.4)
-scale = Vector2(0.3, 0.3)
-texture = ExtResource("8_tipki")
-
-[node name="BeepEffectSpawner" type="Node2D" parent="." unique_id=1491709170]
-unique_name_in_owner = true
-position = Vector2(610, 345)
-script = ExtResource("10_eb6dy")
-scene = ExtResource("11_trceg")
-
 [node name="BedBase" type="Sprite2D" parent="." unique_id=540930035]
-position = Vector2(383, 464)
+position = Vector2(583, 464.00003)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("10_choun")
+
+[node name="AlarmClock" parent="." unique_id=907858564 instance=ExtResource("9_85g3d")]
+position = Vector2(822.00006, 321)

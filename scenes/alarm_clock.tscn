@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://dlnfp1yuddaim"]
+
+[ext_resource type="Script" uid="uid://dod7boa7u822u" path="res://scripts/alarm_clock.gd" id="1_funxo"]
+[ext_resource type="Texture2D" uid="uid://bjx12s0xev8j4" path="res://textures/alarm_clock_base.png" id="2_i6n2i"]
+[ext_resource type="AudioStream" uid="uid://dvth52y5t68sx" path="res://audio/608881__leetsounds__beep.wav" id="2_mdlvu"]
+[ext_resource type="Script" uid="uid://bt1xo6t2h80c1" path="res://scripts/effect_spawner.gd" id="3_mdlvu"]
+[ext_resource type="PackedScene" uid="uid://co6v2hjfm2mh" path="res://scenes/effects/beep.tscn" id="4_32agw"]
+
+[node name="AlarmClock" type="Node2D" unique_id=907858564]
+script = ExtResource("1_funxo")
+
+[node name="BeepPlayer" type="AudioStreamPlayer2D" parent="." unique_id=537755135]
+stream = ExtResource("2_mdlvu")
+volume_db = -25.0
+max_polyphony = 4
+bus = &"Sound Effects"
+
+[node name="AlarmClockBase" type="Sprite2D" parent="." unique_id=99045486]
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("2_i6n2i")
+
+[node name="BeepEffectSpawner" type="Node2D" parent="." unique_id=1519662101]
+unique_name_in_owner = true
+position = Vector2(0, 25)
+script = ExtResource("3_mdlvu")
+scene = ExtResource("4_32agw")

@@ -31,10 +31,9 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 
 @onready var _music_player: AudioStreamPlayer = $MusicPlayer
 @onready var _metronome_player: AudioStreamPlayer = $MetronomePlayer
-@onready var _beep_player: AudioStreamPlayer = $BeepPlayer
 @onready var _snooze_player: AudioStreamPlayer = $SnoozePlayer
 @onready var _miss_player: AudioStreamPlayer = $MissPlayer
-@onready var _beep_effect_spawner: EffectSpawner = %BeepEffectSpawner
+@onready var _alarm_clock: AlarmClock = $AlarmClock
 
 
 var _next_subdivision_to_handle: int = 0
@@ -108,8 +107,7 @@ func _handle_alarm(subdiv: int) -> void:
 	if _alarm_start_subdiv < 0: return
 
 	if subdiv - _alarm_start_subdiv in alarm_beep_pattern:
-		_beep_effect_spawner.spawn()
-		_beep_player.play()
+		_alarm_clock.beep()
 
 # Get the total amount of playback time since the current music was started (this accounts for loops).
 func _get_total_playback_time() -> float:
