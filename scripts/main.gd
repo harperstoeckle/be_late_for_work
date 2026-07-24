@@ -63,6 +63,8 @@ var _checkpoint_next_subdivision: int = 0
 var _checkpoint_num_loops: int = 0
 
 var _time_since_current_dialogue_box_shown: float = 0.0
+# Dialogue to be shown in the current sequence.
+var _queued_dialogue: Array[String] = []
 
 
 func _ready() -> void:
@@ -74,6 +76,12 @@ func _ready() -> void:
 			_music_beat_count = floori(stream.get_length() / 60.0 * _music_bpm)
 
 	_alarm_clock.set_indicator_text("SNOOZING")
+
+	_queue_dialogue_sequence([
+		"My alarm is about to go off",
+		"I don't want to go to work, though, so I want to snooze it instead",
+		"press [j] at just the right time after the alarm beeps to snooze it",
+	])
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -224,4 +232,13 @@ func _is_dialogue_fully_visible() -> bool:
 
 # Will close the dialogue box if no dialogue is left, or will go to the next one if it is available.
 func _continue_dialogue() -> void:
-	_dialogue_box.hide()
+	if _queued_dialogue:
+		_show_dialogue(_queued_dialogue[0])
+		_queued_dialogue.remove_at(0)
+	else:
+		_dialogue_box.hide()
+
+# All of these will be shown in order. Any currently queued dialogue will be canceled.
+func _queue_dialogue_sequence(texts: Array[String]) -> void:
+	_queued_dialogue.assign(texts)
+	_continue_dialogue()
