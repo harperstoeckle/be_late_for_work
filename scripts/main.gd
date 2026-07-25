@@ -43,6 +43,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @onready var _dialogue_box: PanelContainer = %DialogueBox
 @onready var _dialogue_label: RichTextLabel = %DialogueLabel
 @onready var _dialogue_blip_player: AudioStreamPlayer = $DialogueBlipPlayer
+@onready var _nightstand: Sprite2D = $Nightstand
 
 @onready var _global_hand_pos := _arm_border.to_global(_arm_border.points[1]) :
 	set(v):
@@ -141,13 +142,16 @@ func _unhandled_input(event: InputEvent) -> void:
 				match _get_accuracy(e.start_subdivision + e.countdown * SUBDIVISIONS_PER_BEAT + alarm_input_subdivision, cur_total_playback_time):
 					InputAccuracy.GOOD:
 						_alarm_clock.snooze()
+						_hit_react(_alarm_clock, Vector2(0, 20), 0.05)
 					_:
 						_miss_player.play()
+						_hit_react(_nightstand, Vector2(0, 10), 0.05)
 				alarm_found = true
 				break
 
 		if not alarm_found:
 			_miss_player.play()
+			_hit_react(_nightstand, Vector2(0, 10), 0.05)
 	elif event.is_action_pressed("ui_up"):
 		_save_checkpoint()
 	elif event.is_action_pressed("ui_down"):
@@ -303,6 +307,13 @@ func _queue_event(event: Event) -> void:
 # Call `_do_next_story` at `subdiv`.
 func _queue_next_story(subdiv: int) -> void:
 	_queue_event(NextStoryEvent.new(subdiv))
+
+# Make `node` jump back by `offset` as if reacting to being hit.
+func _hit_react(node: Node2D, offset: Vector2, duration: float) -> void:
+	var tween := get_tree().create_tween()
+	var pos := node.global_position
+	tween.tween_property(node, "global_position", pos + offset, duration / 4)
+	tween.tween_property(node, "global_position" , pos, duration * 3 / 4)
 
 # Start the next story sequence.
 func _do_next_story() -> void:
