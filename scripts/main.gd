@@ -30,7 +30,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @export var arm_retract_delay: float = 0.1
 @export var arm_retract_duration: float = 0.1
 @export var snooze_button_hand_offset: Vector2 = Vector2(20, -20)
-@export var dialogue_time_per_character: float = 1 / 50.0
+@export var dialogue_time_per_character: float = 1 / 30.0
 
 
 @onready var _music_player: AudioStreamPlayer = $MusicPlayer
@@ -43,6 +43,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @onready var _default_hand_ref: Node2D = %DefaultHandRef
 @onready var _dialogue_box: PanelContainer = %DialogueBox
 @onready var _dialogue_label: RichTextLabel = %DialogueLabel
+@onready var _dialogue_blip_player: AudioStreamPlayer = $DialogueBlipPlayer
 
 @onready var _global_hand_pos := _arm_border.to_global(_arm_border.points[1]) :
 	set(v):
@@ -86,7 +87,11 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if _is_showing_dialogue() and not _is_dialogue_fully_visible():
 		_time_since_current_dialogue_box_shown += delta
+		var prev_visible_chars := _dialogue_label.visible_characters
 		_dialogue_label.visible_characters = min(_dialogue_label.get_total_character_count(), _time_since_current_dialogue_box_shown / dialogue_time_per_character)
+
+		if prev_visible_chars != _dialogue_label.visible_characters:
+			_dialogue_blip_player.play()
 
 	if not _music_player.playing: return
 
