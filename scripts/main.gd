@@ -312,7 +312,7 @@ func _do_next_story() -> void:
 	# Toby Fox-type dialogue handling.
 	match _story_index:
 		0:
-			_alarm_clock.set_time_left(10)
+			_alarm_clock.set_time_left(2)
 			_queue_dialogue_sequence([
 				"My alarm is about to go off",
 				"I don't want to go to work, though, so I want to snooze it instead",
@@ -326,7 +326,7 @@ func _do_next_story() -> void:
 			_num_music_loops = 0
 			_fade_in_music()
 			_music_player.play()
-			_queue_event(AlarmEvent.new(0, 10))
+			_queue_event(AlarmEvent.new(0, 2))
 			_queue_next_story(_subdiv(6))
 			_story_index = 2
 		2:
