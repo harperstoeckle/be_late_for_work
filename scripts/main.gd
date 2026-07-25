@@ -65,6 +65,7 @@ var _checkpoint_num_loops: int = 0
 var _time_since_current_dialogue_box_shown: float = 0.0
 # Dialogue to be shown in the current sequence.
 var _queued_dialogue: Array[String] = []
+var _story_index: int = 0
 
 
 func _ready() -> void:
@@ -75,13 +76,8 @@ func _ready() -> void:
 		if _music_beat_count <= 0:
 			_music_beat_count = floori(stream.get_length() / 60.0 * _music_bpm)
 
-	_alarm_clock.set_indicator_text("SNOOZING")
+	_do_next_story()
 
-	_queue_dialogue_sequence([
-		"My alarm is about to go off",
-		"I don't want to go to work, though, so I want to snooze it instead",
-		"press [j] at just the right time after the alarm beeps to snooze it",
-	])
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -120,10 +116,6 @@ func _unhandled_input(event: InputEvent) -> void:
 				_dialogue_label.visible_ratio = 1.0
 			else:
 				_continue_dialogue()
-		else:
-			_next_subdivision_to_handle = 0
-			_num_music_loops = 0
-			_music_player.play()
 	elif event.is_action_pressed("snooze"):
 		if _arm_tween: _arm_tween.kill()
 		_arm_tween = get_tree().create_tween()
@@ -235,10 +227,28 @@ func _continue_dialogue() -> void:
 	if _queued_dialogue:
 		_show_dialogue(_queued_dialogue[0])
 		_queued_dialogue.remove_at(0)
-	else:
+	elif _is_showing_dialogue():
 		_dialogue_box.hide()
+		_do_next_story()
 
 # All of these will be shown in order. Any currently queued dialogue will be canceled.
 func _queue_dialogue_sequence(texts: Array[String]) -> void:
 	_queued_dialogue.assign(texts)
 	_continue_dialogue()
+
+# Start the next story sequence.
+func _do_next_story() -> void:
+	# Toby Fox-type dialogue handling.
+	match _story_index:
+		0:
+			_queue_dialogue_sequence([
+				"My alarm is about to go off",
+				"I don't want to go to work, though, so I want to snooze it instead",
+				"press [j] at just the right time after the alarm beeps to snooze it",
+			])
+
+			_story_index += 1
+		1:
+			_next_subdivision_to_handle = 0
+			_num_music_loops = 0
+			_music_player.play()
