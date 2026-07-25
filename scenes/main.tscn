@@ -70,10 +70,34 @@ position = Vector2(842.4, 375.4)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("8_85g3d")
 
+[node name="AlarmClock" parent="." unique_id=907858564 instance=ExtResource("9_85g3d")]
+position = Vector2(822.00006, 321)
+
 [node name="BedBase" type="Sprite2D" parent="." unique_id=540930035]
 position = Vector2(583, 464.00003)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("10_choun")
+
+[node name="Pillow" type="Sprite2D" parent="." unique_id=1439609251]
+position = Vector2(586, 290)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("8_choun")
+region_enabled = true
+region_rect = Rect2(938.4065, 14.131348, 507.85498, 256.7806)
+
+[node name="ManBody" type="Sprite2D" parent="." unique_id=1379461522]
+position = Vector2(579, 426)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("8_choun")
+region_enabled = true
+region_rect = Rect2(536.9977, 351.00787, 365.1991, 593.44855)
+
+[node name="ManHead" type="Sprite2D" parent="." unique_id=1457685622]
+position = Vector2(580, 294)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("8_choun")
+region_enabled = true
+region_rect = Rect2(536.9977, 19.837585, 365.1991, 225.39633)
 
 [node name="Arm" type="Node2D" parent="." unique_id=595817522]
 
@@ -100,26 +124,12 @@ antialiased = true
 unique_name_in_owner = true
 position = Vector2(646, 431)
 
-[node name="Pillow" type="Sprite2D" parent="Arm" unique_id=1439609251]
-position = Vector2(586, 290)
+[node name="ShoulderCap" type="Sprite2D" parent="Arm" unique_id=1914818742]
+position = Vector2(635, 336)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("8_choun")
 region_enabled = true
-region_rect = Rect2(938.4065, 14.131348, 507.85498, 256.7806)
-
-[node name="ManBody" type="Sprite2D" parent="." unique_id=1379461522]
-position = Vector2(579, 426)
-scale = Vector2(0.4, 0.4)
-texture = ExtResource("8_choun")
-region_enabled = true
-region_rect = Rect2(536.9977, 351.00787, 365.1991, 593.44855)
-
-[node name="ManHead" type="Sprite2D" parent="." unique_id=1457685622]
-position = Vector2(580, 294)
-scale = Vector2(0.4, 0.4)
-texture = ExtResource("8_choun")
-region_enabled = true
-region_rect = Rect2(536.9977, 19.837585, 365.1991, 225.39633)
+region_rect = Rect2(952.672, 379.33044, 85.59363, 119.83093)
 
 [node name="Blanket" type="Sprite2D" parent="." unique_id=151534378]
 position = Vector2(584, 496)
@@ -127,9 +137,6 @@ scale = Vector2(0.4, 0.4)
 texture = ExtResource("8_choun")
 region_enabled = true
 region_rect = Rect2(1477.6458, 219.55585, 562.0642, 798.873)
-
-[node name="AlarmClock" parent="." unique_id=907858564 instance=ExtResource("9_85g3d")]
-position = Vector2(822.00006, 321)
 
 [node name="SleepZsRoot" type="Node2D" parent="." unique_id=366196461]
 
@@ -188,10 +195,10 @@ modulate = Color(0, 0, 0, 0)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -2.0
-offset_top = 30.0
-offset_right = -2.0
-offset_bottom = 30.0
+offset_left = -3.0
+offset_top = 39.0
+offset_right = -3.0
+offset_bottom = 39.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
