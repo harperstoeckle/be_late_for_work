@@ -155,13 +155,13 @@ func _unhandled_input(event: InputEvent) -> void:
 func _handle_subdivision(n: int) -> void:
 	if _is_showing_dialogue(): return
 
-	_active_events = _active_events.filter(func (e: Event) -> bool: return not e.is_done(n))
+	_active_events = _active_events.filter(func (e: Event) -> bool: return not _is_event_done(e, n))
 
 	var num_events_to_remove := 0
 	for e in _queued_events:
 		if e.start_subdivision == n:
-			e.start(self)
-			if not e.is_done(n): _active_events.push_back(e)
+			_start_event(e)
+			if not _is_event_done(e, n): _active_events.push_back(e)
 			num_events_to_remove += 1
 		else:
 			break
@@ -169,7 +169,7 @@ func _handle_subdivision(n: int) -> void:
 	_queued_events = _queued_events.slice(num_events_to_remove)
 
 	for e in _active_events:
-		e.handle_subdivision(self, n)
+		_handle_event_at_subdivision(e, n)
 
 	if n % (4 * SUBDIVISIONS_PER_BEAT) == 0:
 		print("Measure %s" % (n / (4 * SUBDIVISIONS_PER_BEAT)))
@@ -178,6 +178,18 @@ func _handle_subdivision(n: int) -> void:
 		_alarm_start_subdiv = n
 
 	_handle_alarm(n)
+
+func _handle_event_at_subdivision(event: Event, n: int) -> void:
+	pass
+
+# True if `event` no longer has to be active.
+func _is_event_done(event: Event, n: int) -> bool:
+	return true
+
+# Handles one-off events, mostly.
+func _start_event(event: Event) -> void:
+	if event is NextStoryEvent:
+		_do_next_story()
 
 func _handle_alarm(subdiv: int) -> void:
 	if _alarm_start_subdiv < 0: return
@@ -328,17 +340,5 @@ func _do_next_story() -> void:
 	func _init(p_start_subdivision: int) -> void:
 		start_subdivision = p_start_subdivision
 
-	func handle_subdivision(main: Main, subdiv: int) -> void: pass
-	## Called when this event's start subdivision is reached. We don't need to pass the subdivision to it, because it would always be equal to [member start_subdivision].
-	func start(main: Main) -> void: pass
-	## Called for all input events.
-	func handle_input(main: Main, event: InputEvent) -> void: pass
-
-	## Returns true if this event can be removed from the active event list at subdivision [param subdiv]. If this is true, then this event will not be updated at [param subdiv].
-	func is_done(subdiv: int) -> bool: return true
-
 ## Runs the next bit of story code.
-class NextStoryEvent extends Event:
-	func start(main: Main) -> void:
-		print("Doing story %s" % main._story_index)
-		main._do_next_story()
+class NextStoryEvent extends Event: pass
