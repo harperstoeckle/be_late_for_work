@@ -57,12 +57,12 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 var _next_subdivision_to_handle: int = 0
 # Number of times the music has fully played and looped back around.
 var _num_music_loops: int = 0
-var _alarm_start_subdiv: int = -1
 var _arm_tween: Tween
 var _music_bpm: int = 120
 var _music_beat_count: int = 0
 var _music_fade_tween: Tween
 
+var _checkpoint_story_index: int = 0
 var _checkpoint_next_subdivision: int = 0
 var _checkpoint_num_loops: int = 0
 
@@ -137,14 +137,19 @@ func _unhandled_input(event: InputEvent) -> void:
 			.set_ease(Tween.EASE_IN) \
 			.set_delay(arm_retract_delay)
 
-		if _alarm_start_subdiv >= 0:
-			var cur_total_playback_time := _get_total_playback_time()
-			match _get_accuracy(_alarm_start_subdiv + alarm_input_subdivision, cur_total_playback_time):
-				InputAccuracy.GOOD:
-					_snooze_player.play(0.15)
-				_:
-					_miss_player.play()
-		else:
+		var alarm_found := false
+		for e in _active_events:
+			if e is AlarmEvent:
+				var cur_total_playback_time := _get_total_playback_time()
+				match _get_accuracy(e.start_subdivision + e.countdown * SUBDIVISIONS_PER_BEAT + alarm_input_subdivision, cur_total_playback_time):
+					InputAccuracy.GOOD:
+						_snooze_player.play(0.15)
+					_:
+						_miss_player.play()
+				alarm_found = true
+				break
+
+		if not alarm_found:
 			_miss_player.play()
 	elif event.is_action_pressed("ui_up"):
 		_save_checkpoint()
@@ -174,28 +179,30 @@ func _handle_subdivision(n: int) -> void:
 	if n % (4 * SUBDIVISIONS_PER_BEAT) == 0:
 		print("Measure %s" % (n / (4 * SUBDIVISIONS_PER_BEAT)))
 
-	if n in alarm_start_subdivisions:
-		_alarm_start_subdiv = n
-
-	_handle_alarm(n)
-
 func _handle_event_at_subdivision(event: Event, n: int) -> void:
-	pass
+	if event is AlarmEvent:
+		# Countdown ticking.
+		if event.active_subdivs(n) < event.countdown * SUBDIVISIONS_PER_BEAT:
+			if event.active_subdivs(n) % SUBDIVISIONS_PER_BEAT == 0:
+				_alarm_clock.set_time_left(event.countdown - event.active_subdivs(n) / SUBDIVISIONS_PER_BEAT)
+				_alarm_clock.tick()
+		elif event.active_subdivs(n) - event.countdown * SUBDIVISIONS_PER_BEAT in alarm_beep_pattern:
+			_alarm_clock.beep()
+
+		if event.active_subdivs(n) == event.countdown * SUBDIVISIONS_PER_BEAT:
+			_alarm_clock.set_indicator_text("ALARM")
 
 # True if `event` no longer has to be active.
 func _is_event_done(event: Event, n: int) -> bool:
+	if event is AlarmEvent:
+		return event.active_subdivs(n) > event.countdown * SUBDIVISIONS_PER_BEAT + alarm_input_subdivision
+
 	return true
 
 # Handles one-off events, mostly.
 func _start_event(event: Event) -> void:
 	if event is NextStoryEvent:
 		_do_next_story()
-
-func _handle_alarm(subdiv: int) -> void:
-	if _alarm_start_subdiv < 0: return
-
-	if subdiv - _alarm_start_subdiv in alarm_beep_pattern:
-		_alarm_clock.beep()
 
 # Get the total amount of playback time since the current music was started (this accounts for loops).
 func _get_total_playback_time() -> float:
@@ -242,17 +249,20 @@ func _next_measure_subdiv() -> int:
 		return cur_subdiv + m - remainder
 
 func _save_checkpoint() -> void:
+	_checkpoint_story_index = _story_index
 	_checkpoint_num_loops = _num_music_loops
 	_checkpoint_next_subdivision = _next_subdivision_to_handle
 
 func _load_checkpoint() -> void:
+	_story_index = _checkpoint_story_index
 	_num_music_loops = _checkpoint_num_loops
 	_next_subdivision_to_handle = _checkpoint_next_subdivision
-	_alarm_start_subdiv = -1
 
 	if _music_beat_count > 0:
 		var music_subdiv: int = max(0, _next_subdivision_to_handle - 1) % (_music_beat_count * SUBDIVISIONS_PER_BEAT)
 		_music_player.seek(music_subdiv * 60.0 / _music_bpm / SUBDIVISIONS_PER_BEAT)
+
+	_do_next_story()
 
 func _show_dialogue(text: String) -> void:
 	_dialogue_box.show()
@@ -311,10 +321,12 @@ func _do_next_story() -> void:
 
 			_story_index = 1
 		1:
+			_save_checkpoint()
 			_next_subdivision_to_handle = 0
 			_num_music_loops = 0
 			_fade_in_music()
 			_music_player.play()
+			_queue_event(AlarmEvent.new(0, 10))
 			_queue_next_story(_subdiv(6))
 			_story_index = 2
 		2:
@@ -340,5 +352,17 @@ func _do_next_story() -> void:
 	func _init(p_start_subdivision: int) -> void:
 		start_subdivision = p_start_subdivision
 
+	# Amount of subdivs this event has spent alive at time `n`.
+	func active_subdivs(n: int) -> int:
+		return n - start_subdivision
+
 ## Runs the next bit of story code.
 class NextStoryEvent extends Event: pass
+
+class AlarmEvent extends Event:
+	# Number of ticks to count down.
+	var countdown: int = 0
+
+	func _init(p_start_subdivision: int, p_countdown: int = 0) -> void:
+		super(p_start_subdivision)
+		countdown = p_countdown
