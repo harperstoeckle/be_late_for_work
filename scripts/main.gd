@@ -205,6 +205,17 @@ func _get_accuracy(target_subdivision: int, input_total_playback_time: float) ->
 func _subdiv(measure: int, beat: int = 0, subdiv: int = 0) -> int:
 	return (measure * BEATS_PER_MEASURE + beat) * SUBDIVISIONS_PER_BEAT + subdiv
 
+# Get the subdivision of the start of the next measure. Useful when scheduling future event when the music is still playing.
+func _next_measure_subdiv() -> int:
+	var m: int = BEATS_PER_MEASURE * SUBDIVISIONS_PER_BEAT
+	var cur_subdiv: int = max(0, _next_subdivision_to_handle - 1)
+
+	var remainder := cur_subdiv % m
+	if remainder == 0:
+		return cur_subdiv
+	else:
+		return cur_subdiv + m - remainder
+
 func _save_checkpoint() -> void:
 	_checkpoint_num_loops = _num_music_loops
 	_checkpoint_next_subdivision = _next_subdivision_to_handle
@@ -266,3 +277,10 @@ func _do_next_story() -> void:
 			_queue_dialogue_sequence([
 				"Good job",
 			])
+			_story_index = 3
+		3:
+			# Wait two measures after the start of the next measure.
+			_next_story_subdivision = _next_measure_subdiv() + _subdiv(2)
+			_story_index = 4
+		4:
+			_queue_dialogue_sequence(["You're done now"])
