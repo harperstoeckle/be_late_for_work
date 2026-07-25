@@ -1,3 +1,4 @@
+class_name Main
 extends Node2D
 
 
@@ -60,8 +61,6 @@ var _alarm_start_subdiv: int = -1
 var _arm_tween: Tween
 var _music_bpm: int = 120
 var _music_beat_count: int = 0
-# The subdivision in the music when the next bit of story is played.
-var _next_story_subdivision: int = 0
 var _music_fade_tween: Tween
 
 var _checkpoint_next_subdivision: int = 0
@@ -71,6 +70,11 @@ var _time_since_current_dialogue_box_shown: float = 0.0
 # Dialogue to be shown in the current sequence.
 var _queued_dialogue: Array[String] = []
 var _story_index: int = 0
+
+# Sorted in order of start time.
+var _queued_events: Array[Event] = []
+# Events being actively updated.
+var _active_events: Array[Event] = []
 
 
 func _ready() -> void:
@@ -151,9 +155,21 @@ func _unhandled_input(event: InputEvent) -> void:
 func _handle_subdivision(n: int) -> void:
 	if _is_showing_dialogue(): return
 
-	if n >= _next_story_subdivision:
-		_do_next_story()
-		return
+	_active_events = _active_events.filter(func (e: Event) -> bool: return not e.is_done(n))
+
+	var num_events_to_remove := 0
+	for e in _queued_events:
+		if e.start_subdivision == n:
+			e.start(self)
+			if not e.is_done(n): _active_events.push_back(e)
+			num_events_to_remove += 1
+		else:
+			break
+
+	_queued_events = _queued_events.slice(num_events_to_remove)
+
+	for e in _active_events:
+		e.handle_subdivision(self, n)
 
 	if n % (4 * SUBDIVISIONS_PER_BEAT) == 0:
 		print("Measure %s" % (n / (4 * SUBDIVISIONS_PER_BEAT)))
@@ -258,6 +274,17 @@ func _fade_in_music() -> void:
 	_music_fade_tween = get_tree().create_tween()
 	_music_fade_tween.tween_property(_music_player, "volume_linear", _default_music_volume_linear, music_fade_time)
 
+func _queue_event(event: Event) -> void:
+	# Insert the event in sorted order.
+	var idx := _queued_events.bsearch_custom(event,
+		func (a: Event, b: Event) -> bool: return a.start_subdivision < b.start_subdivision,
+		false)
+	_queued_events.insert(idx, event)
+
+# Call `_do_next_story` at `subdiv`.
+func _queue_next_story(subdiv: int) -> void:
+	_queue_event(NextStoryEvent.new(subdiv))
+
 # Start the next story sequence.
 func _do_next_story() -> void:
 	# Toby Fox-type dialogue handling.
@@ -276,7 +303,7 @@ func _do_next_story() -> void:
 			_num_music_loops = 0
 			_fade_in_music()
 			_music_player.play()
-			_next_story_subdivision = _subdiv(6)
+			_queue_next_story(_subdiv(6))
 			_story_index = 2
 		2:
 			_music_player.stream_paused = true
@@ -287,7 +314,29 @@ func _do_next_story() -> void:
 		3:
 			_music_player.stream_paused = false
 			# Wait two measures after the start of the next measure.
-			_next_story_subdivision = _next_measure_subdiv() + _subdiv(2)
+			_queue_next_story(_next_measure_subdiv() + _subdiv(2))
 			_story_index = 4
 		4:
 			_queue_dialogue_sequence(["You're done now"])
+
+
+## A thing that happens to the beat at some subdivision.
+@abstract class Event:
+	# The subdivision at which this event will become active.
+	var start_subdivision: int = 0
+
+
+	func handle_subdivision(main: Main, subdiv: int) -> void: pass
+	## Called when this event's start subdivision is reached. We don't need to pass the subdivision to it, because it would always be equal to [member start_subdivision].
+	func start(main: Main) -> void: pass
+
+	## Returns true if this event can be removed from the active event list at subdivision [param subdiv]. If this is true, then this event will not be updated at [param subdiv].
+	func is_done(subdiv: int) -> bool: return true
+
+## Runs the next bit of story code.
+class NextStoryEvent extends Event:
+	func _init(p_start_subdivision: int) -> void:
+		start_subdivision = p_start_subdivision
+	func start(main: Main) -> void:
+		print("Doing story %s" % main._story_index)
+		main._do_next_story()
