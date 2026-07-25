@@ -25,7 +25,7 @@ bus = &"Sound Effects"
 
 [node name="SnoozePlayer" type="AudioStreamPlayer2D" parent="." unique_id=2060120305]
 stream = ExtResource("4_lq5we")
-volume_db = -10.0
+volume_db = -5.0
 max_polyphony = 4
 bus = &"Sound Effects"
 

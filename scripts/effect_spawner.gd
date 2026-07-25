@@ -13,6 +13,11 @@ extends Node2D
 var _effect_node_to_transform: Dictionary[Node2D, Transform2D] = {}
 
 
+## Just shorthand for setting the global position and calling [method spawn].
+func spawn_at(global_pos: Vector2) -> void:
+	global_position = global_pos
+	spawn()
+
 func spawn() -> void:
 	if not scene: return
 

@@ -32,6 +32,8 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @export var snooze_button_hand_offset: Vector2 = Vector2(20, -20)
 @export var dialogue_time_per_character: float = 1 / 30.0
 @export var music_fade_time: float = 0.05
+## Hit vfx (when hitting or missing a note) will appear at a random point within this radius about where the hand hits.
+@export var hit_effect_radius: float = 20
 
 
 @onready var _music_player: AudioStreamPlayer = $MusicPlayer
@@ -46,6 +48,8 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @onready var _nightstand: Sprite2D = $Nightstand
 @onready var _sleep_zs_root: Node2D = $SleepZsRoot
 @onready var _overlay: ColorRect = %Overlay
+@onready var _success_effect_spawner: EffectSpawner = $SuccessEffectSpawner
+@onready var _failure_effect_spawner: EffectSpawner = $FailureEffectSpawner
 
 @onready var _global_hand_pos := _arm_border.to_global(_arm_border.points[1]) :
 	set(v):
@@ -147,6 +151,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			.set_ease(Tween.EASE_IN) \
 			.set_delay(arm_retract_delay)
 
+		var effect_pos := _random_point_in_radius(_global_hand_pos, hit_effect_radius)
+
 		var alarm_found := false
 		for e in _active_events:
 			if e is AlarmEvent:
@@ -155,10 +161,12 @@ func _unhandled_input(event: InputEvent) -> void:
 					InputAccuracy.GOOD:
 						_alarm_clock.snooze()
 						_hit_react(_alarm_clock, Vector2(0, 20), 0.05)
+						_success_effect_spawner.spawn_at(effect_pos)
 					_:
 						_miss_player.play()
 						_hit_react(_nightstand, Vector2(0, 10), 0.05)
 						_lose_life()
+						_failure_effect_spawner.spawn_at(effect_pos)
 				alarm_found = true
 				break
 
@@ -166,6 +174,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_miss_player.play()
 			_hit_react(_nightstand, Vector2(0, 10), 0.05)
 			_lose_life()
+			_failure_effect_spawner.spawn_at(effect_pos)
 	elif event.is_action_pressed("ui_up"):
 		_save_checkpoint()
 	elif event.is_action_pressed("ui_down"):
@@ -364,6 +373,13 @@ func _lose_life() -> void:
 # True when we're playing animations where the player shouldn't be able to do anything (like when resetting after dying).
 func _should_block_input() -> bool:
 	return _death_reset_tween and _death_reset_tween.is_running()
+
+func _random_point_in_radius(pos: Vector2, radius: float) -> Vector2:
+	var angle := randf_range(0.0, 2 * PI)
+	# Apparently taking the square root makes this uniform.
+	var dist := radius * sqrt(randf_range(0, 1))
+
+	return pos + Vector2.from_angle(angle) * dist
 
 # Start the next story sequence.
 func _do_next_story() -> void:

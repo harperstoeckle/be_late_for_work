@@ -10,6 +10,9 @@
 [ext_resource type="PackedScene" uid="uid://dlnfp1yuddaim" path="res://scenes/alarm_clock.tscn" id="9_85g3d"]
 [ext_resource type="PackedScene" uid="uid://xuxm0stxcc23" path="res://scenes/sleep_z.tscn" id="9_choun"]
 [ext_resource type="Texture2D" uid="uid://c01vnjc1o5o3o" path="res://textures/bed_base.png" id="10_choun"]
+[ext_resource type="Script" uid="uid://bt1xo6t2h80c1" path="res://scripts/effect_spawner.gd" id="11_ya4ey"]
+[ext_resource type="PackedScene" uid="uid://c8alxu2rjeudw" path="res://scenes/effects/success.tscn" id="12_trceg"]
+[ext_resource type="PackedScene" uid="uid://ckylwjslyans7" path="res://scenes/effects/failure.tscn" id="13_a8y0u"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_85g3d"]
 content_margin_left = 10.0
@@ -199,3 +202,13 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0.09411765, 0.10980392, 0.21960784, 1)
+
+[node name="SuccessEffectSpawner" type="Node2D" parent="." unique_id=1351436883]
+script = ExtResource("11_ya4ey")
+scene = ExtResource("12_trceg")
+metadata/_custom_type_script = "uid://bt1xo6t2h80c1"
+
+[node name="FailureEffectSpawner" type="Node2D" parent="." unique_id=373074748]
+script = ExtResource("11_ya4ey")
+scene = ExtResource("13_a8y0u")
+metadata/_custom_type_script = "uid://bt1xo6t2h80c1"
