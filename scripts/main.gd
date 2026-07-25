@@ -31,6 +31,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @export var arm_retract_duration: float = 0.1
 @export var snooze_button_hand_offset: Vector2 = Vector2(20, -20)
 @export var dialogue_time_per_character: float = 1 / 30.0
+@export var music_fade_time: float = 0.05
 
 
 @onready var _music_player: AudioStreamPlayer = $MusicPlayer
@@ -51,6 +52,8 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 		_arm_border.set_point_position(1, _arm_border.to_local(_global_hand_pos))
 		_arm_inside.set_point_position(1, _arm_inside.to_local(_global_hand_pos))
 
+@onready var _default_music_volume_linear := _music_player.volume_linear
+
 
 var _next_subdivision_to_handle: int = 0
 # Number of times the music has fully played and looped back around.
@@ -61,6 +64,7 @@ var _music_bpm: int = 120
 var _music_beat_count: int = 0
 # The subdivision in the music when the next bit of story is played.
 var _next_story_subdivision: int = 0
+var _music_fade_tween: Tween
 
 var _checkpoint_next_subdivision: int = 0
 var _checkpoint_num_loops: int = 0
@@ -260,6 +264,12 @@ func _queue_dialogue_sequence(texts: Array[String]) -> void:
 	_queued_dialogue.assign(texts)
 	_continue_dialogue()
 
+func _fade_in_music() -> void:
+	if _music_fade_tween: _music_fade_tween.kill()
+	_music_player.volume_linear = 0.0
+	_music_fade_tween = get_tree().create_tween()
+	_music_fade_tween.tween_property(_music_player, "volume_linear", _default_music_volume_linear, music_fade_time)
+
 # Start the next story sequence.
 func _do_next_story() -> void:
 	# Toby Fox-type dialogue handling.
@@ -275,15 +285,18 @@ func _do_next_story() -> void:
 		1:
 			_next_subdivision_to_handle = 0
 			_num_music_loops = 0
+			_fade_in_music()
 			_music_player.play()
 			_next_story_subdivision = _subdiv(6)
 			_story_index = 2
 		2:
+			_music_player.stream_paused = true
 			_queue_dialogue_sequence([
 				"Good job",
 			])
 			_story_index = 3
 		3:
+			_music_player.stream_paused = false
 			# Wait two measures after the start of the next measure.
 			_next_story_subdivision = _next_measure_subdiv() + _subdiv(2)
 			_story_index = 4
