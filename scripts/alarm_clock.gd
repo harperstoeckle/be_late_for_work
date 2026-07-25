@@ -6,6 +6,7 @@ extends Node2D
 @onready var _beep_effect_spawner: EffectSpawner = %BeepEffectSpawner
 @onready var _indicator_label: Label = $IndicatorLabel
 @onready var _countdown: Node2D = $Countdown
+@onready var _tick_player: AudioStreamPlayer2D = $TickPlayer
 # Digit labels.
 @onready var _d_0: Label = %D0
 @onready var _d_1: Label = %D1
@@ -16,6 +17,9 @@ extends Node2D
 func beep() -> void:
 	_beep_player.play()
 	_beep_effect_spawner.spawn()
+
+func tick() -> void:
+	_tick_player.play()
 
 func set_time_left(seconds: int) -> void:
 	_indicator_label.hide()
