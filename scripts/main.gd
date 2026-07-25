@@ -58,6 +58,8 @@ var _alarm_start_subdiv: int = -1
 var _arm_tween: Tween
 var _music_bpm: int = 120
 var _music_beat_count: int = 0
+# The subdivision in the music when the next bit of story is played.
+var _next_story_subdivision: int = 0
 
 var _checkpoint_next_subdivision: int = 0
 var _checkpoint_num_loops: int = 0
@@ -140,6 +142,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 # Handle logic for the passing of the nth subdivision.
 func _handle_subdivision(n: int) -> void:
+	if _is_showing_dialogue(): return
+
+	if n >= _next_story_subdivision:
+		_do_next_story()
+		return
+
 	if n % (4 * SUBDIVISIONS_PER_BEAT) == 0:
 		print("Measure %s" % (n / (4 * SUBDIVISIONS_PER_BEAT)))
 	if not metronome_pattern: return
@@ -247,8 +255,14 @@ func _do_next_story() -> void:
 				"press [j] at just the right time after the alarm beeps to snooze it",
 			])
 
-			_story_index += 1
+			_story_index = 1
 		1:
 			_next_subdivision_to_handle = 0
 			_num_music_loops = 0
 			_music_player.play()
+			_next_story_subdivision = _subdiv(6)
+			_story_index = 2
+		2:
+			_queue_dialogue_sequence([
+				"Good job",
+			])
