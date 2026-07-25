@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://c8alxu2rjeudw"]
+
+[ext_resource type="Texture2D" uid="uid://45xw4g5at0bp" path="res://textures/success_effect.png" id="1_xkgbw"]
+
+[sub_resource type="Animation" id="Animation_w54fa"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SuccessEffect:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.4, 0.4)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SuccessEffect:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_1nrfn"]
+resource_name = "go"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SuccessEffect:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.099999994),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.4, 0.4), Vector2(0.3, 0.3)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SuccessEffect:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.06666667, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_wbknp"]
+_data = {
+&"RESET": SubResource("Animation_w54fa"),
+&"go": SubResource("Animation_1nrfn")
+}
+
+[node name="Success" type="Node2D" unique_id=888709505]
+
+[node name="SuccessEffect" type="Sprite2D" parent="." unique_id=1771970675]
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("1_xkgbw")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1841920346]
+libraries/ = SubResource("AnimationLibrary_wbknp")
+autoplay = &"go"
