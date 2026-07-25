@@ -325,18 +325,20 @@ func _do_next_story() -> void:
 	# The subdivision at which this event will become active.
 	var start_subdivision: int = 0
 
+	func _init(p_start_subdivision: int) -> void:
+		start_subdivision = p_start_subdivision
 
 	func handle_subdivision(main: Main, subdiv: int) -> void: pass
 	## Called when this event's start subdivision is reached. We don't need to pass the subdivision to it, because it would always be equal to [member start_subdivision].
 	func start(main: Main) -> void: pass
+	## Called for all input events.
+	func handle_input(main: Main, event: InputEvent) -> void: pass
 
 	## Returns true if this event can be removed from the active event list at subdivision [param subdiv]. If this is true, then this event will not be updated at [param subdiv].
 	func is_done(subdiv: int) -> bool: return true
 
 ## Runs the next bit of story code.
 class NextStoryEvent extends Event:
-	func _init(p_start_subdivision: int) -> void:
-		start_subdivision = p_start_subdivision
 	func start(main: Main) -> void:
 		print("Doing story %s" % main._story_index)
 		main._do_next_story()
