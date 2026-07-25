@@ -86,8 +86,6 @@ func _ready() -> void:
 
 	_do_next_story()
 
-
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if _is_showing_dialogue() and not _is_dialogue_fully_visible():
@@ -342,6 +340,12 @@ func _do_next_story() -> void:
 		4:
 			_queue_dialogue_sequence(["You're done now"])
 
+
+## Describes how an alarm sounds and accepts input.
+class AlarmSpec:
+
+	var beep_pattern: Array[int] = []
+	var input_subdivision: int = 0
 
 ## A thing that happens to the beat at some subdivision.
 @abstract class Event:
