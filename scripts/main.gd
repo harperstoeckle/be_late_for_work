@@ -273,6 +273,12 @@ func _load_checkpoint() -> void:
 	_num_music_loops = _checkpoint_num_loops
 	_next_subdivision_to_handle = _checkpoint_next_subdivision
 
+	# We expect these to be populated by the story code, so they shouldn't be saved.
+	_dialogue_box.hide()
+	_active_events.clear()
+	_queued_events.clear()
+	_queued_dialogue.clear()
+
 	# Always start with all lives.
 	for z in _sleep_zs:
 		z.unpop()
