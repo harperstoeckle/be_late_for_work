@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://dpr8arjjs4whb" path="res://textures/wallpaper.png" id="7_o6xl0"]
 [ext_resource type="Texture2D" uid="uid://c1nm57vw33doy" path="res://textures/nightstand.png" id="8_85g3d"]
 [ext_resource type="PackedScene" uid="uid://dlnfp1yuddaim" path="res://scenes/alarm_clock.tscn" id="9_85g3d"]
+[ext_resource type="PackedScene" uid="uid://xuxm0stxcc23" path="res://scenes/sleep_z.tscn" id="9_choun"]
 [ext_resource type="Texture2D" uid="uid://c01vnjc1o5o3o" path="res://textures/bed_base.png" id="10_choun"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_85g3d"]
@@ -100,6 +101,29 @@ antialiased = true
 [node name="DefaultHandRef" type="Node2D" parent="Arm" unique_id=1579630850]
 unique_name_in_owner = true
 position = Vector2(646, 378)
+
+[node name="SleepZs" type="Node2D" parent="." unique_id=366196461]
+
+[node name="0" parent="SleepZs" unique_id=1783894370 instance=ExtResource("9_choun")]
+position = Vector2(677, 174)
+bob_vec = Vector2(0, 2)
+bob_speed = 3.0
+
+[node name="1" parent="SleepZs" unique_id=1829065527 instance=ExtResource("9_choun")]
+position = Vector2(720, 135)
+rotation = -0.60847384
+scale = Vector2(0.72, 0.72)
+bob_vec = Vector2(0, 2)
+bob_phase = 1.1
+bob_speed = 3.0
+
+[node name="2" parent="SleepZs" unique_id=104017258 instance=ExtResource("9_choun")]
+position = Vector2(752, 98.00001)
+rotation = -1.0083696
+scale = Vector2(0.555, 0.555)
+bob_vec = Vector2(0, 2)
+bob_phase = 1.4
+bob_speed = 3.0
 
 [node name="UILayer" type="CanvasLayer" parent="." unique_id=1176636045]
 
