@@ -14,7 +14,6 @@ const BEATS_PER_MEASURE: int = 4
 const SUBDIVISIONS_PER_BEAT: int = 4
 
 
-@export var metronome_pattern: Array[int] = [4, 2, 2]
 @export var alarm_beep_pattern: Array[int] = [0, 2, 6, 8]
 @export var alarm_input_subdivision: int = 10
 @export var alarm_start_subdivisions: Array[int] = [
@@ -35,7 +34,6 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 
 
 @onready var _music_player: AudioStreamPlayer = $MusicPlayer
-@onready var _metronome_player: AudioStreamPlayer = $MetronomePlayer
 @onready var _snooze_player: AudioStreamPlayer = $SnoozePlayer
 @onready var _miss_player: AudioStreamPlayer = $MissPlayer
 @onready var _alarm_clock: AlarmClock = $AlarmClock
@@ -159,16 +157,6 @@ func _handle_subdivision(n: int) -> void:
 
 	if n % (4 * SUBDIVISIONS_PER_BEAT) == 0:
 		print("Measure %s" % (n / (4 * SUBDIVISIONS_PER_BEAT)))
-	if not metronome_pattern: return
-
-	var subdivs_per_metronome_cycle: int = metronome_pattern.reduce(func (a: int, b: int) -> int: return a + b, 0)
-	var cur_subdiv_in_cycle := n % subdivs_per_metronome_cycle
-
-	var subdiv_target := 0
-	for i in metronome_pattern:
-		if subdiv_target == cur_subdiv_in_cycle:
-			_metronome_player.play()
-		subdiv_target += i
 
 	if n in alarm_start_subdivisions:
 		_alarm_start_subdiv = n
@@ -275,6 +263,7 @@ func _do_next_story() -> void:
 	# Toby Fox-type dialogue handling.
 	match _story_index:
 		0:
+			_alarm_clock.set_time_left(10)
 			_queue_dialogue_sequence([
 				"My alarm is about to go off",
 				"I don't want to go to work, though, so I want to snooze it instead",
