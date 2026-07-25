@@ -44,6 +44,8 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @onready var _dialogue_label: RichTextLabel = %DialogueLabel
 @onready var _dialogue_blip_player: AudioStreamPlayer = $DialogueBlipPlayer
 @onready var _nightstand: Sprite2D = $Nightstand
+@onready var _sleep_zs_root: Node2D = $SleepZsRoot
+@onready var _overlay: ColorRect = %Overlay
 
 @onready var _global_hand_pos := _arm_border.to_global(_arm_border.points[1]) :
 	set(v):
@@ -61,6 +63,8 @@ var _arm_tween: Tween
 var _music_bpm: int = 120
 var _music_beat_count: int = 0
 var _music_fade_tween: Tween
+# For the dark overlay when transitioning.
+var _death_reset_tween: Tween
 
 var _checkpoint_story_index: int = 0
 var _checkpoint_next_subdivision: int = 0
@@ -76,8 +80,14 @@ var _queued_events: Array[Event] = []
 # Events being actively updated.
 var _active_events: Array[Event] = []
 
+var _sleep_zs: Array[SleepZ] = []
+var _num_lives_left := 1
+
 
 func _ready() -> void:
+	_sleep_zs.assign(_sleep_zs_root.find_children("", "SleepZ", false, false))
+	_num_lives_left = max(1, _sleep_zs.size())
+
 	var stream := _music_player.stream as AudioStreamOggVorbis
 	if stream:
 		_music_bpm = max(stream.bpm, 1)
@@ -120,6 +130,8 @@ func _process(delta: float) -> void:
 		_next_subdivision_to_handle += 1
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _should_block_input(): return
+
 	if event.is_action_pressed("ui_accept"):
 		if _is_showing_dialogue():
 			if not _is_dialogue_fully_visible():
@@ -146,12 +158,14 @@ func _unhandled_input(event: InputEvent) -> void:
 					_:
 						_miss_player.play()
 						_hit_react(_nightstand, Vector2(0, 10), 0.05)
+						_lose_life()
 				alarm_found = true
 				break
 
 		if not alarm_found:
 			_miss_player.play()
 			_hit_react(_nightstand, Vector2(0, 10), 0.05)
+			_lose_life()
 	elif event.is_action_pressed("ui_up"):
 		_save_checkpoint()
 	elif event.is_action_pressed("ui_down"):
@@ -259,6 +273,11 @@ func _load_checkpoint() -> void:
 	_num_music_loops = _checkpoint_num_loops
 	_next_subdivision_to_handle = _checkpoint_next_subdivision
 
+	# Always start with all lives.
+	for z in _sleep_zs:
+		z.unpop()
+	_num_lives_left = max(1, _sleep_zs.size())
+
 	if _music_beat_count > 0:
 		var music_subdiv: int = max(0, _next_subdivision_to_handle - 1) % (_music_beat_count * SUBDIVISIONS_PER_BEAT)
 		_music_player.seek(music_subdiv * 60.0 / _music_bpm / SUBDIVISIONS_PER_BEAT)
@@ -291,11 +310,18 @@ func _queue_dialogue_sequence(texts: Array[String]) -> void:
 	_queued_dialogue.assign(texts)
 	_continue_dialogue()
 
-func _fade_in_music() -> void:
+func _fade_in_music(duration: float = -1) -> void:
+	if duration < 0: duration = music_fade_time
 	if _music_fade_tween: _music_fade_tween.kill()
 	_music_player.volume_linear = 0.0
 	_music_fade_tween = get_tree().create_tween()
-	_music_fade_tween.tween_property(_music_player, "volume_linear", _default_music_volume_linear, music_fade_time)
+	_music_fade_tween.tween_property(_music_player, "volume_linear", _default_music_volume_linear, duration)
+
+func _fade_out_music(duration: float = -1) -> void:
+	if duration < 0: duration = music_fade_time
+	if _music_fade_tween: _music_fade_tween.kill()
+	_music_fade_tween = get_tree().create_tween()
+	_music_fade_tween.tween_property(_music_player, "volume_linear", 0.0, duration)
 
 func _queue_event(event: Event) -> void:
 	# Insert the event in sorted order.
@@ -314,6 +340,24 @@ func _hit_react(node: Node2D, offset: Vector2, duration: float) -> void:
 	var pos := node.global_position
 	tween.tween_property(node, "global_position", pos + offset, duration / 4)
 	tween.tween_property(node, "global_position" , pos, duration * 3 / 4)
+
+func _lose_life() -> void:
+	_num_lives_left -= 1
+	if _num_lives_left >= 0 and _num_lives_left < _sleep_zs.size():
+		_sleep_zs[_num_lives_left].pop()
+
+	if _num_lives_left <= 0:
+		# Fade the black overlay in and out, and go back to the last checkpoint.
+		_death_reset_tween = get_tree().create_tween()
+		_death_reset_tween.tween_callback(_fade_out_music.bind(0.4))
+		_death_reset_tween.tween_property(_overlay, "modulate", Color.WHITE, 0.2).set_delay(0.2)
+		_death_reset_tween.tween_property(_overlay, "modulate", Color(0, 0, 0, 0), 0.2).set_delay(0.4)
+		_death_reset_tween.parallel().tween_callback(_load_checkpoint).set_delay(0.4)
+		_death_reset_tween.parallel().tween_callback(_fade_in_music.bind(0.4)).set_delay(0.4)
+
+# True when we're playing animations where the player shouldn't be able to do anything (like when resetting after dying).
+func _should_block_input() -> bool:
+	return _death_reset_tween and _death_reset_tween.is_running()
 
 # Start the next story sequence.
 func _do_next_story() -> void:

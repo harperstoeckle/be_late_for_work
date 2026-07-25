@@ -102,14 +102,14 @@ antialiased = true
 unique_name_in_owner = true
 position = Vector2(646, 378)
 
-[node name="SleepZs" type="Node2D" parent="." unique_id=366196461]
+[node name="SleepZsRoot" type="Node2D" parent="." unique_id=366196461]
 
-[node name="0" parent="SleepZs" unique_id=1783894370 instance=ExtResource("9_choun")]
+[node name="0" parent="SleepZsRoot" unique_id=1783894370 instance=ExtResource("9_choun")]
 position = Vector2(677, 174)
 bob_vec = Vector2(0, 2)
 bob_speed = 3.0
 
-[node name="1" parent="SleepZs" unique_id=1829065527 instance=ExtResource("9_choun")]
+[node name="1" parent="SleepZsRoot" unique_id=1829065527 instance=ExtResource("9_choun")]
 position = Vector2(720, 135)
 rotation = -0.60847384
 scale = Vector2(0.72, 0.72)
@@ -117,7 +117,7 @@ bob_vec = Vector2(0, 2)
 bob_phase = 1.1
 bob_speed = 3.0
 
-[node name="2" parent="SleepZs" unique_id=104017258 instance=ExtResource("9_choun")]
+[node name="2" parent="SleepZsRoot" unique_id=104017258 instance=ExtResource("9_choun")]
 position = Vector2(752, 98.00001)
 rotation = -1.0083696
 scale = Vector2(0.555, 0.555)
@@ -152,3 +152,14 @@ text = "My alarm is about to go off."
 visible_characters = 0
 visible_characters_behavior = 1
 visible_ratio = 0.0
+
+[node name="Overlay" type="ColorRect" parent="UILayer" unique_id=1145777974]
+unique_name_in_owner = true
+modulate = Color(0, 0, 0, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.09411765, 0.10980392, 0.21960784, 1)

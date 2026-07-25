@@ -1,3 +1,4 @@
+class_name SleepZ
 extends Node2D
 
 
