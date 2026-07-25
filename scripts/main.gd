@@ -50,6 +50,8 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @onready var _overlay: ColorRect = %Overlay
 @onready var _success_effect_spawner: EffectSpawner = $SuccessEffectSpawner
 @onready var _failure_effect_spawner: EffectSpawner = $FailureEffectSpawner
+@onready var _man_head: Sprite2D = $ManHead
+@onready var _man_eyes: Sprite2D = $ManHead/ManEyes
 
 @onready var _global_hand_pos := _arm_border.to_global(_arm_border.points[1]) :
 	set(v):
@@ -167,6 +169,7 @@ func _unhandled_input(event: InputEvent) -> void:
 						_hit_react(_nightstand, Vector2(0, 10), 0.05)
 						_lose_life()
 						_failure_effect_spawner.spawn_at(effect_pos)
+						_hit_react(_man_head, Vector2(-10, 0), 0.05)
 				alarm_found = true
 				break
 
@@ -175,6 +178,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_hit_react(_nightstand, Vector2(0, 10), 0.05)
 			_lose_life()
 			_failure_effect_spawner.spawn_at(effect_pos)
+			_hit_react(_man_head, Vector2(-10, 0), 0.05)
 	elif event.is_action_pressed("ui_up"):
 		_save_checkpoint()
 	elif event.is_action_pressed("ui_down"):
@@ -288,6 +292,8 @@ func _load_checkpoint() -> void:
 	_queued_events.clear()
 	_queued_dialogue.clear()
 
+	_man_eyes.hide()
+
 	# Always start with all lives.
 	for z in _sleep_zs:
 		z.unpop()
@@ -362,10 +368,12 @@ func _lose_life() -> void:
 		_sleep_zs[_num_lives_left].pop()
 
 	if _num_lives_left <= 0:
+		_man_eyes.show()
+
 		# Fade the black overlay in and out, and go back to the last checkpoint.
 		_death_reset_tween = get_tree().create_tween()
 		_death_reset_tween.tween_callback(_fade_out_music.bind(0.4))
-		_death_reset_tween.tween_property(_overlay, "modulate", Color.WHITE, 0.2).set_delay(0.2)
+		_death_reset_tween.tween_property(_overlay, "modulate", Color.WHITE, 0.2).set_delay(0.4)
 		_death_reset_tween.tween_property(_overlay, "modulate", Color(0, 0, 0, 0), 0.2).set_delay(0.4)
 		_death_reset_tween.parallel().tween_callback(_load_checkpoint).set_delay(0.4)
 		_death_reset_tween.parallel().tween_callback(_fade_in_music.bind(0.4)).set_delay(0.4)

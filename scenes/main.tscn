@@ -102,6 +102,14 @@ texture = ExtResource("8_choun")
 region_enabled = true
 region_rect = Rect2(536.9977, 19.837585, 365.1991, 225.39633)
 
+[node name="ManEyes" type="Sprite2D" parent="ManHead" unique_id=1024657339]
+visible = false
+position = Vector2(12.5, -7.5)
+scale = Vector2(0.99999994, 0.99999994)
+texture = ExtResource("8_choun")
+region_enabled = true
+region_rect = Rect2(1106.7405, 499.16138, 202.57129, 77.03424)
+
 [node name="Arm" type="Node2D" parent="." unique_id=595817522]
 
 [node name="ArmBorder" type="Line2D" parent="Arm" unique_id=1857980103]
