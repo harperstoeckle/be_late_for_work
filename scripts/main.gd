@@ -35,7 +35,6 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 
 
 @onready var _music_player: AudioStreamPlayer = $MusicPlayer
-@onready var _snooze_player: AudioStreamPlayer = $SnoozePlayer
 @onready var _miss_player: AudioStreamPlayer = $MissPlayer
 @onready var _alarm_clock: AlarmClock = $AlarmClock
 @onready var _arm_border: Line2D = %ArmBorder
@@ -143,7 +142,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				var cur_total_playback_time := _get_total_playback_time()
 				match _get_accuracy(e.start_subdivision + e.countdown * SUBDIVISIONS_PER_BEAT + alarm_input_subdivision, cur_total_playback_time):
 					InputAccuracy.GOOD:
-						_snooze_player.play(0.15)
+						_alarm_clock.snooze()
 					_:
 						_miss_player.play()
 				alarm_found = true

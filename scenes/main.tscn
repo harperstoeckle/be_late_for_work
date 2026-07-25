@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://bcq5ie2lvyknm" path="res://scripts/main.gd" id="1_o5qli"]
 [ext_resource type="AudioStream" uid="uid://b2k2v5uuuq5kl" path="res://music/a.ogg" id="2_0wfyh"]
-[ext_resource type="AudioStream" uid="uid://d3k8a2chpsol5" path="res://audio/525179__sophia_c__plastic-impact-2-hit-with-axe.wav" id="5_tbgi4"]
 [ext_resource type="AudioStream" uid="uid://1ttaky17ealg" path="res://audio/249895__alienxxx__blip2.wav" id="6_choun"]
 [ext_resource type="AudioStream" uid="uid://drxytpokc1apa" path="res://audio/193676__deleted_user_2814878__gatedenied.wav" id="6_tefeu"]
 [ext_resource type="Texture2D" uid="uid://dpr8arjjs4whb" path="res://textures/wallpaper.png" id="7_o6xl0"]
@@ -33,12 +32,6 @@ script = ExtResource("1_o5qli")
 stream = ExtResource("2_0wfyh")
 volume_db = 10.0
 bus = &"Music"
-
-[node name="SnoozePlayer" type="AudioStreamPlayer" parent="." unique_id=1658271]
-stream = ExtResource("5_tbgi4")
-volume_db = -10.0
-max_polyphony = 4
-bus = &"Sound Effects"
 
 [node name="MissPlayer" type="AudioStreamPlayer" parent="." unique_id=1817118186]
 stream = ExtResource("6_tefeu")
