@@ -594,8 +594,15 @@ func _do_next_story() -> void:
 				_alarm(_subdiv(8, 3, 2), 1, 0),
 				_alarm(_subdiv(9, 3, 0), 0, 0),
 				_alarm(_subdiv(10, 2, 2), 1, 0),
+
+				_alarm(_subdiv(12, 1), 2, 3),
+				_alarm(_subdiv(14, 2), 1, 4),
+				_alarm(_subdiv(15, 2), 0, 4),
+
+				# Evil syncopated alarm 2.
+				_alarm(_subdiv(19, 0, 2), 2, 0),
 			])
-			_queue_next_story(_subdiv(40))
+			_queue_next_story(_subdiv(21))
 			_story_index += 1
 		_:
 			_queue_dialogue_sequence([

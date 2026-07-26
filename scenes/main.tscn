@@ -205,6 +205,22 @@ bob_vec = Vector2(0, 2)
 bob_phase = 1.4
 bob_speed = 3.0
 
+[node name="3" parent="SleepZsRoot" unique_id=38705027 instance=ExtResource("9_choun")]
+position = Vector2(780.00006, 74.00003)
+rotation = -0.6414182
+scale = Vector2(0.555, 0.555)
+bob_vec = Vector2(0, 2)
+bob_phase = 1.7
+bob_speed = 3.0
+
+[node name="4" parent="SleepZsRoot" unique_id=297973808 instance=ExtResource("9_choun")]
+position = Vector2(813, 59.999992)
+rotation = -0.22432771
+scale = Vector2(0.555, 0.555)
+bob_vec = Vector2(0, 2)
+bob_phase = 2.0
+bob_speed = 3.0
+
 [node name="UILayer" type="CanvasLayer" parent="." unique_id=1176636045]
 
 [node name="MarginContainer" type="MarginContainer" parent="UILayer" unique_id=730237596]
