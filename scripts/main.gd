@@ -15,21 +15,12 @@ const BEATS_PER_MEASURE: int = 4
 const SUBDIVISIONS_PER_BEAT: int = 4
 
 
-@export var alarm_beep_pattern: Array[int] = [0, 2, 6, 8]
-@export var alarm_input_subdivision: int = 10
-@export var alarm_start_subdivisions: Array[int] = [
-	_subdiv(1),
-	_subdiv(2, 0, 2),
-	_subdiv(3),
-	_subdiv(3, 3),
-]
 ## Maximum time before a subdivision is reached where an input is still considered to have landed on that subdivision.
 @export var pre_subdivision_input_leeway: float = 0.05
 ## Maximum time after a subdivision is reached where an input is still considered to have landed on that subdivision.
 @export var post_subdivision_input_leeway: float = 0.05
 @export var arm_retract_delay: float = 0.1
 @export var arm_retract_duration: float = 0.1
-@export var snooze_button_hand_offset: Vector2 = Vector2(20, -20)
 @export var dialogue_time_per_character: float = 1 / 30.0
 @export var music_fade_time: float = 0.05
 ## Hit vfx (when hitting or missing a note) will appear at a random point within this radius about where the hand hits.
@@ -39,6 +30,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @onready var _music_player: AudioStreamPlayer = $MusicPlayer
 @onready var _miss_player: AudioStreamPlayer = $MissPlayer
 @onready var _alarm_clock: AlarmClock = $AlarmClock
+@onready var _alarm_clock_2: AlarmClock = $AlarmClock2
 @onready var _arm_border: Line2D = %ArmBorder
 @onready var _arm_inside: Line2D = %ArmInside
 @onready var _default_hand_ref: Node2D = %DefaultHandRef
@@ -46,6 +38,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @onready var _dialogue_label: RichTextLabel = %DialogueLabel
 @onready var _dialogue_blip_player: AudioStreamPlayer = $DialogueBlipPlayer
 @onready var _nightstand: Sprite2D = $Nightstand
+@onready var _nightstand_2: Sprite2D = $Nightstand2
 @onready var _sleep_zs_root: Node2D = $SleepZsRoot
 @onready var _overlay: ColorRect = %Overlay
 @onready var _success_effect_spawner: EffectSpawner = $SuccessEffectSpawner
@@ -89,8 +82,24 @@ var _active_events: Array[Event] = []
 var _sleep_zs: Array[SleepZ] = []
 var _num_lives_left := 1
 
+var _alarm_spec_0 := AlarmSpec.new()
+var _alarm_spec_1 := AlarmSpec.new()
+
 
 func _ready() -> void:
+	# Describe how each alarm behaves.
+	_alarm_spec_0.beep_pattern = [0, 2, 6, 8]
+	_alarm_spec_0.input_subdivision = 10
+	_alarm_spec_0.miss_hand_offset = Vector2(-30, 0)
+	_alarm_spec_0.alarm = _alarm_clock
+	_alarm_spec_0.miss_object = _nightstand
+
+	_alarm_spec_1.beep_pattern = [0, 6, 8]
+	_alarm_spec_1.input_subdivision = 12
+	_alarm_spec_1.miss_hand_offset = Vector2(50, 0)
+	_alarm_spec_1.alarm = _alarm_clock_2
+	_alarm_spec_1.miss_object = _nightstand_2
+
 	_sleep_zs.assign(_sleep_zs_root.find_children("", "SleepZ", false, false))
 	_num_lives_left = max(1, _sleep_zs.size())
 
@@ -145,40 +154,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				_dialogue_label.visible_ratio = 1.0
 			else:
 				_continue_dialogue()
-	elif event.is_action_pressed("snooze"):
-		if _arm_tween: _arm_tween.kill()
-		_arm_tween = get_tree().create_tween()
-		_global_hand_pos = _alarm_clock.global_position + snooze_button_hand_offset
-		_arm_tween.tween_property(self, "_global_hand_pos", _default_hand_ref.global_position, arm_retract_duration) \
-			.set_ease(Tween.EASE_IN) \
-			.set_delay(arm_retract_delay)
-
-		var effect_pos := _random_point_in_radius(_global_hand_pos, hit_effect_radius)
-
-		var alarm_found := false
-		for e in _active_events:
-			if e is AlarmEvent:
-				var cur_total_playback_time := _get_total_playback_time()
-				match _get_accuracy(e.start_subdivision + e.countdown * SUBDIVISIONS_PER_BEAT + alarm_input_subdivision, cur_total_playback_time):
-					InputAccuracy.GOOD:
-						_alarm_clock.snooze()
-						_hit_react(_alarm_clock, Vector2(0, 20), 0.05)
-						_success_effect_spawner.spawn_at(effect_pos)
-					_:
-						_miss_player.play()
-						_hit_react(_nightstand, Vector2(0, 10), 0.05)
-						_lose_life()
-						_failure_effect_spawner.spawn_at(effect_pos)
-						_hit_react(_man_head, Vector2(-10, 0), 0.05)
-				alarm_found = true
-				break
-
-		if not alarm_found:
-			_miss_player.play()
-			_hit_react(_nightstand, Vector2(0, 10), 0.05)
-			_lose_life()
-			_failure_effect_spawner.spawn_at(effect_pos)
-			_hit_react(_man_head, Vector2(-10, 0), 0.05)
+	elif event.is_action_pressed("snooze_0"):
+		_do_alarm_input(_alarm_spec_0)
+	elif event.is_action_pressed("snooze_1"):
+		_do_alarm_input(_alarm_spec_1)
 	elif event.is_action_pressed("ui_up"):
 		_save_checkpoint()
 	elif event.is_action_pressed("ui_down"):
@@ -209,21 +188,23 @@ func _handle_subdivision(n: int) -> void:
 
 func _handle_event_at_subdivision(event: Event, n: int) -> void:
 	if event is AlarmEvent:
+		if not event.spec: return
+
 		# Countdown ticking.
 		if event.active_subdivs(n) < event.countdown * SUBDIVISIONS_PER_BEAT:
 			if event.active_subdivs(n) % SUBDIVISIONS_PER_BEAT == 0:
-				_alarm_clock.set_time_left(event.countdown - event.active_subdivs(n) / SUBDIVISIONS_PER_BEAT)
-				_alarm_clock.tick()
-		elif event.active_subdivs(n) - event.countdown * SUBDIVISIONS_PER_BEAT in alarm_beep_pattern:
-			_alarm_clock.beep()
+				event.spec.alarm.set_time_left(event.countdown - event.active_subdivs(n) / SUBDIVISIONS_PER_BEAT)
+				event.spec.alarm.tick()
+		elif event.active_subdivs(n) - event.countdown * SUBDIVISIONS_PER_BEAT in event.spec.beep_pattern:
+			event.spec.alarm.beep()
 
 		if event.active_subdivs(n) == event.countdown * SUBDIVISIONS_PER_BEAT:
-			_alarm_clock.set_indicator_text("ALARM")
+			event.spec.alarm.set_indicator_text("ALARM")
 
 # True if `event` no longer has to be active.
 func _is_event_done(event: Event, n: int) -> bool:
 	if event is AlarmEvent:
-		return event.active_subdivs(n) > event.countdown * SUBDIVISIONS_PER_BEAT + alarm_input_subdivision
+		return event.active_subdivs(n) > event.spec.input_subdivision + event.countdown * SUBDIVISIONS_PER_BEAT
 
 	return true
 
@@ -351,6 +332,9 @@ func _queue_event(event: Event) -> void:
 		false)
 	_queued_events.insert(idx, event)
 
+func _queue_events(events: Array[Event]) -> void:
+	for e in events: _queue_event(e)
+
 # Call `_do_next_story` at `subdiv`.
 func _queue_next_story(subdiv: int) -> void:
 	_queue_event(NextStoryEvent.new(subdiv))
@@ -389,6 +373,51 @@ func _random_point_in_radius(pos: Vector2, radius: float) -> Vector2:
 
 	return pos + Vector2.from_angle(angle) * dist
 
+# Try to press the alarm described by `spec`.
+func _do_alarm_input(spec: AlarmSpec) -> void:
+	if _arm_tween: _arm_tween.kill()
+	_arm_tween = get_tree().create_tween()
+	_global_hand_pos = spec.alarm.global_position + spec.hit_hand_offset
+	_arm_tween.tween_property(self, "_global_hand_pos", _default_hand_ref.global_position, arm_retract_duration) \
+		.set_ease(Tween.EASE_IN) \
+		.set_delay(arm_retract_delay)
+
+	var effect_pos := _random_point_in_radius(_global_hand_pos, hit_effect_radius)
+
+	var alarm_found := false
+	for e in _active_events:
+		if e is AlarmEvent and e.spec == spec:
+			var cur_total_playback_time := _get_total_playback_time()
+			match _get_accuracy(e.start_subdivision + e.countdown * SUBDIVISIONS_PER_BEAT + spec.input_subdivision, cur_total_playback_time):
+				InputAccuracy.GOOD:
+					spec.alarm.snooze()
+					_hit_react(spec.alarm, Vector2(0, 20), 0.05)
+					_success_effect_spawner.spawn_at(effect_pos)
+				_:
+					_miss_player.play()
+					_hit_react(spec.miss_object, spec.miss_knockback, 0.05)
+					_lose_life()
+					_failure_effect_spawner.spawn_at(effect_pos)
+					_hit_react(_man_head, Vector2(-10, 0), 0.05)
+			alarm_found = true
+			break
+
+	if not alarm_found:
+		_miss_player.play()
+		_hit_react(spec.miss_object, spec.miss_knockback, 0.05)
+		_lose_life()
+		_failure_effect_spawner.spawn_at(effect_pos)
+		_hit_react(_man_head, Vector2(-10, 0), 0.05)
+
+# Really lazy way to make alarm events in a small amount of space.
+func _alarm(start_subdivision: int, alarm_index: int, countdown: int = 0) -> AlarmEvent:
+	var spec: AlarmSpec = null
+	match alarm_index:
+		0: spec = _alarm_spec_0
+		_: spec = _alarm_spec_1
+
+	return AlarmEvent.new(start_subdivision, spec, countdown)
+
 # Start the next story sequence.
 func _do_next_story() -> void:
 	# Toby Fox-type dialogue handling.
@@ -408,7 +437,10 @@ func _do_next_story() -> void:
 			_num_music_loops = 0
 			_fade_in_music()
 			_music_player.play()
-			_queue_event(AlarmEvent.new(0, 2))
+			_queue_events([
+				_alarm(0, 0, 2),
+				_alarm(_subdiv(2), 1, 3),
+			])
 			_queue_next_story(_subdiv(6))
 			_story_index = 2
 		2:
@@ -428,9 +460,15 @@ func _do_next_story() -> void:
 
 ## Describes how an alarm sounds and accepts input.
 class AlarmSpec:
-
 	var beep_pattern: Array[int] = []
 	var input_subdivision: int = 0
+	var hit_hand_offset: Vector2 = Vector2(20, -15)
+	var miss_hand_offset: Vector2 = Vector2.ZERO
+	var miss_knockback: Vector2 = Vector2(0, 10)
+
+	var alarm: AlarmClock
+	# Object to knock on if the input is missed.
+	var miss_object: Node2D
 
 ## A thing that happens to the beat at some subdivision.
 @abstract class Event:
@@ -448,9 +486,12 @@ class AlarmSpec:
 class NextStoryEvent extends Event: pass
 
 class AlarmEvent extends Event:
+	var spec: AlarmSpec
+
 	# Number of ticks to count down.
 	var countdown: int = 0
 
-	func _init(p_start_subdivision: int, p_countdown: int = 0) -> void:
+	func _init(p_start_subdivision: int, p_spec: AlarmSpec, p_countdown: int = 0) -> void:
 		super(p_start_subdivision)
+		spec = p_spec
 		countdown = p_countdown

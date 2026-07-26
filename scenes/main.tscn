@@ -73,8 +73,16 @@ position = Vector2(842.4, 375.4)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("8_85g3d")
 
+[node name="Nightstand2" type="Sprite2D" parent="." unique_id=885762331]
+position = Vector2(335.99997, 378)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("8_85g3d")
+
 [node name="AlarmClock" parent="." unique_id=907858564 instance=ExtResource("9_85g3d")]
 position = Vector2(822.00006, 321)
+
+[node name="AlarmClock2" parent="." unique_id=164746242 instance=ExtResource("9_85g3d")]
+position = Vector2(321, 318)
 
 [node name="BedBase" type="Sprite2D" parent="." unique_id=540930035]
 position = Vector2(583, 464.00003)
