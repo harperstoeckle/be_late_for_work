@@ -105,7 +105,7 @@ func _ready() -> void:
 	_alarm_spec_1.alarm = _alarm_clock_2
 	_alarm_spec_1.miss_object = _nightstand_2
 
-	_alarm_spec_2.beep_pattern = [0, 1, 2, 3]
+	_alarm_spec_2.beep_pattern = [0, 1, 2, 4]
 	_alarm_spec_2.input_subdivision = 10
 	_alarm_spec_2.miss_response_subdivision = 12
 	_alarm_spec_2.miss_hand_offset = Vector2(50, 0)
@@ -184,6 +184,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		_do_next_story()
 	elif event.is_action_pressed("ui_right"):
 		_clear_transient_story_state()
+		_do_next_story()
+	elif event.is_action_pressed("ui_down"):
+		_clear_transient_story_state()
+		_story_index = 9
 		_do_next_story()
 
 func _skip_or_continue_dialogue() -> void:
@@ -565,6 +569,33 @@ func _do_next_story() -> void:
 				_alarm(_subdiv(5), 2, 5),
 			])
 			_queue_next_story(_subdiv(7, 2))
+			_story_index += 1
+		8:
+			_fade_out_music(0.3)
+			_alarm_clock_3.set_time_left(4)
+			_queue_dialogue_sequence([
+				"The three alarms are now fully armed.",
+				"It is time",
+				"to be late for work.",
+			])
+			_story_index += 1
+		9:
+			_save_checkpoint()
+			_restart_music()
+			_queue_events([
+				_alarm(0, 0, 1),
+				_alarm(_subdiv(1, 1), 0, 1),
+				_alarm(_subdiv(2, 0), 0, 2),
+				_alarm(_subdiv(4, 0), 1, 4),
+				# Long countdown happens in parallel to the other ones.
+				_alarm(_subdiv(6, 0, 0), 2, 28),
+				_alarm(_subdiv(6, 0, 2), 1, 2),
+				_alarm(_subdiv(7, 3, 0), 1, 0),
+				_alarm(_subdiv(8, 3, 2), 1, 0),
+				_alarm(_subdiv(9, 3, 0), 0, 0),
+				_alarm(_subdiv(10, 2, 2), 1, 0),
+			])
+			_queue_next_story(_subdiv(40))
 			_story_index += 1
 		_:
 			_queue_dialogue_sequence([
