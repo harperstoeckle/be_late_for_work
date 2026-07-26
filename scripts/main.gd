@@ -480,7 +480,7 @@ func _do_next_story() -> void:
 				"Behold.\nA man.",
 				"He has three different alarms set to wake him up for work.",
 				"As you can see, the one on the left (his right) has 4 beats left before it goes off.",
-				"You can snooze the alarm for him by pressing [J] with precise timing, an eighth note after the alarm beeps for the fourth time.",
+				"You can snooze the alarm for him by pressing [J] with precise timing, half a beat after the alarm beeps for the fourth time.",
 				"Here. Try to get it three times in a row."
 			])
 
@@ -521,7 +521,7 @@ func _do_next_story() -> void:
 			_alarm_clock_2.set_time_left(4)
 			_queue_dialogue_sequence([
 				"It looks like it's about time for the alarm on the right (the man's left) to go off.",
-				"Press [L] to snooze this alarm. This one needs you to wait a quarter note after the third beep.",
+				"Press [L] to snooze this alarm. This one needs you to wait for one beat after the third beep.",
 			])
 			_story_index += 1
 		5:
@@ -534,6 +534,25 @@ func _do_next_story() -> void:
 				_alarm(_subdiv(5, 2, 2), 1, 2),
 			])
 			_queue_next_story(_subdiv(8, 2))
+			_story_index += 1
+		6:
+			_fade_out_music(0.3)
+			_alarm_clock_3.set_time_left(4)
+			_queue_dialogue_sequence([
+				"The man put the final alarm on a shelf, which is so high that he surely cannot snooze it without getting out of bed.",
+				"Use [K] to snooze it. Wait a full beat and a half after the fourth beep (but be warned; the beeps are fast).",
+			])
+			_story_index += 1
+		7:
+			_save_checkpoint()
+			_restart_music()
+			_queue_events([
+				_alarm(0, 2, 4),
+				_alarm(_subdiv(2), 2, 4),
+				_alarm(_subdiv(4, 1), 2, 0),
+				_alarm(_subdiv(5), 2, 5),
+			])
+			_queue_next_story(_subdiv(7, 2))
 			_story_index += 1
 		_:
 			_queue_dialogue_sequence([
