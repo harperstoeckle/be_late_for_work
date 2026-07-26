@@ -7,6 +7,7 @@
 [ext_resource type="AudioStream" uid="uid://ba2fxoan0jpwq" path="res://audio/tick.ogg" id="3_vw8ac"]
 [ext_resource type="PackedScene" uid="uid://co6v2hjfm2mh" path="res://scenes/effects/beep.tscn" id="4_32agw"]
 [ext_resource type="AudioStream" uid="uid://c118fv4efvry7" path="res://audio/snooze.ogg" id="4_c0adh"]
+[ext_resource type="PackedScene" uid="uid://ldw5ihclp813" path="res://scenes/effects/flash.tscn" id="8_vw8ac"]
 
 [node name="AlarmClock" type="Node2D" unique_id=907858564]
 script = ExtResource("1_funxo")
@@ -38,6 +39,12 @@ unique_name_in_owner = true
 position = Vector2(0, 25)
 script = ExtResource("3_mdlvu")
 scene = ExtResource("4_32agw")
+
+[node name="FlashEffectSpawner" type="Node2D" parent="." unique_id=722616970]
+unique_name_in_owner = true
+script = ExtResource("3_mdlvu")
+scene = ExtResource("8_vw8ac")
+metadata/_custom_type_script = "uid://bt1xo6t2h80c1"
 
 [node name="Countdown" type="Node2D" parent="." unique_id=1071574709]
 visible = false

@@ -211,6 +211,8 @@ func _handle_event_at_subdivision(event: Event, n: int) -> void:
 				event.spec.alarm.tick()
 		elif event.active_subdivs(n) - event.countdown * SUBDIVISIONS_PER_BEAT in event.spec.beep_pattern:
 			event.spec.alarm.beep()
+		elif event.active_subdivs(n) - event.countdown * SUBDIVISIONS_PER_BEAT == event.spec.input_subdivision:
+			pass #event.spec.alarm.flash()
 		elif not event.attempted_input and event.active_subdivs(n) - event.countdown * SUBDIVISIONS_PER_BEAT == event.spec.miss_response_subdivision:
 			# The input was missed without any attempt being made.
 			_miss_player.play()
