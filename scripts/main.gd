@@ -122,6 +122,7 @@ func _ready() -> void:
 		if _music_beat_count <= 0:
 			_music_beat_count = floori(stream.get_length() / 60.0 * _music_bpm)
 
+	_clear_transient_story_state()
 	_do_next_story()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -225,7 +226,7 @@ func _handle_event_at_subdivision(event: Event, n: int) -> void:
 
 
 		if event.active_subdivs(n) == event.countdown * SUBDIVISIONS_PER_BEAT:
-			event.spec.alarm.set_indicator_text("ALARM")
+			event.spec.alarm.set_indicator_text("")
 
 # True if `event` no longer has to be active.
 func _is_event_done(event: Event, n: int) -> bool:
