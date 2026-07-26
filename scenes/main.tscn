@@ -71,12 +71,12 @@ mouse_filter = 2
 color = Color(0.6431373, 0.32156864, 0.34901962, 1)
 
 [node name="Nightstand" type="Sprite2D" parent="." unique_id=1406322094]
-position = Vector2(842.4, 375.4)
+position = Vector2(332.99997, 375)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("8_85g3d")
 
 [node name="Nightstand2" type="Sprite2D" parent="." unique_id=885762331]
-position = Vector2(335.99997, 378)
+position = Vector2(827, 374)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("8_85g3d")
 
@@ -86,13 +86,13 @@ scale = Vector2(0.4, 0.4)
 texture = ExtResource("14_a8y0u")
 
 [node name="AlarmClock" parent="." unique_id=907858564 instance=ExtResource("9_85g3d")]
-position = Vector2(822.00006, 321)
+position = Vector2(358, 319)
 
 [node name="AlarmClock2" parent="." unique_id=164746242 instance=ExtResource("9_85g3d")]
-position = Vector2(321, 318)
+position = Vector2(816, 321)
 
 [node name="AlarmClock3" parent="." unique_id=628270595 instance=ExtResource("9_85g3d")]
-position = Vector2(386.4001, 47.40001)
+position = Vector2(493, 46)
 
 [node name="BedBase" type="Sprite2D" parent="." unique_id=540930035]
 position = Vector2(583, 464.00003)

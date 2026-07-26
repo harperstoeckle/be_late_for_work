@@ -169,9 +169,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("snooze_0"):
 		_do_alarm_input(_alarm_spec_0)
 	elif event.is_action_pressed("snooze_1"):
-		_do_alarm_input(_alarm_spec_1)
-	elif event.is_action_pressed("snooze_2"):
 		_do_alarm_input(_alarm_spec_2)
+	elif event.is_action_pressed("snooze_2"):
+		_do_alarm_input(_alarm_spec_1)
 	elif event.is_action_pressed("ui_up"):
 		_save_checkpoint()
 	elif event.is_action_pressed("ui_down"):
