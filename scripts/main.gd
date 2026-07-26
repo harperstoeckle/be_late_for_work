@@ -173,10 +173,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		_do_alarm_input(_alarm_spec_2)
 	elif event.is_action_pressed("snooze_2"):
 		_do_alarm_input(_alarm_spec_1)
-	elif event.is_action_pressed("ui_up"):
-		_save_checkpoint()
-	elif event.is_action_pressed("ui_down"):
-		_load_checkpoint()
+	elif event.is_action_pressed("ui_left"):
+		_clear_transient_story_state()
+		_story_index = max(0, _story_index - 2)
+		_do_next_story()
 	elif event.is_action_pressed("ui_right"):
 		_clear_transient_story_state()
 		_do_next_story()
