@@ -18,7 +18,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 ## Maximum time before a subdivision is reached where an input is still considered to have landed on that subdivision.
 @export var pre_subdivision_input_leeway: float = 0.05
 ## Maximum time after a subdivision is reached where an input is still considered to have landed on that subdivision.
-@export var post_subdivision_input_leeway: float = 0.05
+@export var post_subdivision_input_leeway: float = 0.09
 @export var arm_retract_delay: float = 0.1
 @export var arm_retract_duration: float = 0.1
 @export var dialogue_time_per_character: float = 1 / 30.0
