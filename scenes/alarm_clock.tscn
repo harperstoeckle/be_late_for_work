@@ -20,7 +20,7 @@ bus = &"Sound Effects"
 
 [node name="TickPlayer" type="AudioStreamPlayer2D" parent="." unique_id=1329402158]
 stream = ExtResource("3_vw8ac")
-volume_db = -20.0
+volume_db = -10.0
 max_polyphony = 4
 bus = &"Sound Effects"
 
