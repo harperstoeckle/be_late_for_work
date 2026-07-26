@@ -92,8 +92,20 @@ position = Vector2(358, 319)
 [node name="AlarmClock2" parent="." unique_id=164746242 instance=ExtResource("9_85g3d")]
 position = Vector2(816, 321)
 
+[node name="BeepPlayer" parent="AlarmClock2" index="0" unique_id=537755135]
+pitch_scale = 0.8
+
+[node name="TickPlayer" parent="AlarmClock2" index="1" unique_id=1329402158]
+pitch_scale = 0.8
+
 [node name="AlarmClock3" parent="." unique_id=628270595 instance=ExtResource("9_85g3d")]
 position = Vector2(493, 46)
+
+[node name="BeepPlayer" parent="AlarmClock3" index="0" unique_id=537755135]
+pitch_scale = 1.2
+
+[node name="TickPlayer" parent="AlarmClock3" index="1" unique_id=1329402158]
+pitch_scale = 1.2
 
 [node name="BedBase" type="Sprite2D" parent="." unique_id=540930035]
 position = Vector2(583, 464.00003)
@@ -243,3 +255,6 @@ metadata/_custom_type_script = "uid://bt1xo6t2h80c1"
 script = ExtResource("11_ya4ey")
 scene = ExtResource("13_a8y0u")
 metadata/_custom_type_script = "uid://bt1xo6t2h80c1"
+
+[editable path="AlarmClock2"]
+[editable path="AlarmClock3"]
