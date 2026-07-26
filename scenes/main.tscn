@@ -37,6 +37,7 @@ script = ExtResource("1_o5qli")
 stream = ExtResource("2_0wfyh")
 volume_db = 10.0
 bus = &"Music"
+playback_type = 1
 
 [node name="MissPlayer" type="AudioStreamPlayer" parent="." unique_id=1817118186]
 stream = ExtResource("3_trceg")

@@ -291,7 +291,7 @@ func _load_checkpoint() -> void:
 
 	if _music_beat_count > 0:
 		var music_subdiv: int = max(0, _next_subdivision_to_handle - 1) % (_music_beat_count * SUBDIVISIONS_PER_BEAT)
-		_music_player.seek(music_subdiv * 60.0 / _music_bpm / SUBDIVISIONS_PER_BEAT)
+		_music_player.play(music_subdiv * 60.0 / _music_bpm / SUBDIVISIONS_PER_BEAT)
 
 	_do_next_story()
 
