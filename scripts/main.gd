@@ -177,10 +177,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("ui_down"):
 		_load_checkpoint()
 	elif event.is_action_pressed("ui_right"):
-		_active_events.clear()
-		_queued_events.clear()
-		_queued_dialogue.clear()
-		_dialogue_box.hide()
+		_clear_transient_story_state()
 		_do_next_story()
 
 # Handle logic for the passing of the nth subdivision.
@@ -296,11 +293,7 @@ func _load_checkpoint() -> void:
 	_num_music_loops = _checkpoint_num_loops
 	_next_subdivision_to_handle = _checkpoint_next_subdivision
 
-	# We expect these to be populated by the story code, so they shouldn't be saved.
-	_dialogue_box.hide()
-	_active_events.clear()
-	_queued_events.clear()
-	_queued_dialogue.clear()
+	_clear_transient_story_state()
 
 	_man_eyes.hide()
 
@@ -456,6 +449,17 @@ func _restart_music() -> void:
 	_fade_in_music()
 	_music_player.play()
 
+# Clear transient stuff that's added by the story (like events and dialogue).
+func _clear_transient_story_state() -> void:
+	_active_events.clear()
+	_queued_events.clear()
+	_queued_dialogue.clear()
+	_dialogue_box.hide()
+	_alarm_clock.set_indicator_text("")
+	_alarm_clock_2.set_indicator_text("")
+	_alarm_clock_3.set_indicator_text("")
+
+
 # Start the next story sequence.
 func _do_next_story() -> void:
 	# Toby Fox-type dialogue handling.
@@ -491,7 +495,7 @@ func _do_next_story() -> void:
 			_queue_next_story(_subdiv(6))
 			_story_index += 1
 		2:
-			_fade_out_music(0.5)
+			_fade_out_music(0.3)
 			_queue_dialogue_sequence([
 				"Good job",
 				"Unfortunately, these alarm clocks are very inconsistent, and they don't always start counting down from the same point.",
@@ -513,6 +517,7 @@ func _do_next_story() -> void:
 			_queue_next_story(_subdiv(8, 2))
 			_story_index += 1
 		4:
+			_fade_out_music(0.3)
 			_queue_dialogue_sequence(["You're done now"])
 
 
