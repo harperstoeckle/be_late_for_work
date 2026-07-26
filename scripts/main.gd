@@ -176,6 +176,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		_save_checkpoint()
 	elif event.is_action_pressed("ui_down"):
 		_load_checkpoint()
+	elif event.is_action_pressed("ui_right"):
+		_active_events.clear()
+		_queued_events.clear()
+		_queued_dialogue.clear()
+		_dialogue_box.hide()
+		_do_next_story()
 
 # Handle logic for the passing of the nth subdivision.
 func _handle_subdivision(n: int) -> void:
@@ -444,12 +450,20 @@ func _alarm(start_subdivision: int, alarm_index: int, countdown: int = 0) -> Ala
 
 	return AlarmEvent.new(start_subdivision, spec, countdown)
 
+func _restart_music() -> void:
+	_next_subdivision_to_handle = 0
+	_num_music_loops = 0
+	_fade_in_music()
+	_music_player.play()
+
 # Start the next story sequence.
 func _do_next_story() -> void:
 	# Toby Fox-type dialogue handling.
 	match _story_index:
 		0:
-			_alarm_clock.set_time_left(2)
+			_alarm_clock.set_time_left(4)
+			_alarm_clock_2.set_indicator_text("")
+			_alarm_clock_3.set_indicator_text("")
 
 			# Warning for web players to consider downloading the executable.
 			if OS.has_feature("web"):
@@ -458,36 +472,46 @@ func _do_next_story() -> void:
 					false
 				)
 			_queue_dialogue_sequence([
-				"My alarm is about to go off",
-				"I don't want to go to work, though, so I want to snooze it instead",
-				"press [j] at just the right time after the alarm beeps to snooze it",
+				"Behold.\nA man.",
+				"He has three different alarms set to wake him up for work.",
+				"As you can see, the one on the left (his right) has 4 beats left before it goes off.",
+				"You can snooze the alarm for him by pressing [J] with precise timing, an eighth note after the alarm beeps for the fourth time.",
+				"Here. Try to get it three times in a row."
 			])
 
-			_story_index = 1
+			_story_index += 1
 		1:
 			_save_checkpoint()
-			_next_subdivision_to_handle = 0
-			_num_music_loops = 0
-			_fade_in_music()
-			_music_player.play()
+			_restart_music()
 			_queue_events([
-				_alarm(0, 0, 2),
-				_alarm(_subdiv(2), 1, 3),
-				_alarm(_subdiv(4), 2, 1)
+				_alarm(0, 0, 4),
+				_alarm(_subdiv(2), 0, 4),
+				_alarm(_subdiv(4), 0, 4),
 			])
 			_queue_next_story(_subdiv(6))
-			_story_index = 2
+			_story_index += 1
 		2:
-			_music_player.stream_paused = true
+			_fade_out_music(0.5)
 			_queue_dialogue_sequence([
 				"Good job",
+				"Unfortunately, these alarm clocks are very inconsistent, and they don't always start counting down from the same point.",
+				"Sometimes they even go off without any warning at all. See for yourself."
 			])
-			_story_index = 3
+			_story_index += 1
 		3:
-			_music_player.stream_paused = false
+			_save_checkpoint()
+			_restart_music()
+			_queue_events([
+				_alarm(_subdiv(0, 2), 0, 2),
+				_alarm(_subdiv(2), 0, 2),
+				_alarm(_subdiv(3, 1), 0, 5),
+				_alarm(_subdiv(5, 2), 0, 0),
+				_alarm(_subdiv(6, 1, 2), 0, 0),
+				_alarm(_subdiv(7, 0, 2), 0, 0),
+			])
 			# Wait two measures after the start of the next measure.
-			_queue_next_story(_next_measure_subdiv() + _subdiv(2))
-			_story_index = 4
+			_queue_next_story(_subdiv(8, 2))
+			_story_index += 1
 		4:
 			_queue_dialogue_sequence(["You're done now"])
 
