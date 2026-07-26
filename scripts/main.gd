@@ -514,12 +514,35 @@ func _do_next_story() -> void:
 				_alarm(_subdiv(6, 1, 2), 0, 0),
 				_alarm(_subdiv(7, 0, 2), 0, 0),
 			])
-			# Wait two measures after the start of the next measure.
 			_queue_next_story(_subdiv(8, 2))
 			_story_index += 1
 		4:
 			_fade_out_music(0.3)
-			_queue_dialogue_sequence(["You're done now"])
+			_alarm_clock_2.set_time_left(4)
+			_queue_dialogue_sequence([
+				"It looks like it's about time for the alarm on the right (the man's left) to go off.",
+				"Press [L] to snooze this alarm. This one needs you to wait a quarter note after the third beep.",
+			])
+			_story_index += 1
+		5:
+			_save_checkpoint()
+			_restart_music()
+			_queue_events([
+				_alarm(0, 1, 4),
+				_alarm(_subdiv(2), 1, 4),
+				_alarm(_subdiv(4, 2), 1, 1),
+				_alarm(_subdiv(5, 2, 2), 1, 2),
+			])
+			_queue_next_story(_subdiv(8, 2))
+			_story_index += 1
+		_:
+			_queue_dialogue_sequence([
+				"Congratulations. You have completed the game.",
+				"Credits",
+				"Sound effects were taken from freesound.org. Specific attribution text is available in the itch.io description.",
+				"The color palette is \"Sweet and Sour 20\" by Qirlfriend on lospec.com.",
+				"Programming: divqii\nArt: divqii\nMusic: divqii",
+			])
 
 
 ## Describes how an alarm sounds and accepts input.
