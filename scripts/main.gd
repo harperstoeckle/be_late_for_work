@@ -162,17 +162,22 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("ui_accept"):
 		if _is_showing_dialogue():
-			if not _is_dialogue_fully_visible():
-				# Skip dialogue if it's not finished being displayed.
-				_dialogue_label.visible_ratio = 1.0
-			else:
-				_continue_dialogue()
+			_skip_or_continue_dialogue()
 	elif event.is_action_pressed("snooze_0"):
-		_do_alarm_input(_alarm_spec_0)
+		if _is_showing_dialogue():
+			_skip_or_continue_dialogue()
+		else:
+			_do_alarm_input(_alarm_spec_0)
 	elif event.is_action_pressed("snooze_1"):
-		_do_alarm_input(_alarm_spec_2)
+		if _is_showing_dialogue():
+			_skip_or_continue_dialogue()
+		else:
+			_do_alarm_input(_alarm_spec_2)
 	elif event.is_action_pressed("snooze_2"):
-		_do_alarm_input(_alarm_spec_1)
+		if _is_showing_dialogue():
+			_skip_or_continue_dialogue()
+		else:
+			_do_alarm_input(_alarm_spec_1)
 	elif event.is_action_pressed("ui_left"):
 		_clear_transient_story_state()
 		_story_index = max(0, _story_index - 2)
@@ -180,6 +185,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("ui_right"):
 		_clear_transient_story_state()
 		_do_next_story()
+
+func _skip_or_continue_dialogue() -> void:
+	if not _is_dialogue_fully_visible():
+		# Skip dialogue if it's not finished being displayed.
+		_dialogue_label.visible_ratio = 1.0
+	else:
+		_continue_dialogue()
 
 # Handle logic for the passing of the nth subdivision.
 func _handle_subdivision(n: int) -> void:
