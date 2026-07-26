@@ -31,6 +31,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @onready var _miss_player: AudioStreamPlayer = $MissPlayer
 @onready var _alarm_clock: AlarmClock = $AlarmClock
 @onready var _alarm_clock_2: AlarmClock = $AlarmClock2
+@onready var _alarm_clock_3: AlarmClock = $AlarmClock3
 @onready var _arm_border: Line2D = %ArmBorder
 @onready var _arm_inside: Line2D = %ArmInside
 @onready var _default_hand_ref: Node2D = %DefaultHandRef
@@ -39,6 +40,7 @@ const SUBDIVISIONS_PER_BEAT: int = 4
 @onready var _dialogue_blip_player: AudioStreamPlayer = $DialogueBlipPlayer
 @onready var _nightstand: Sprite2D = $Nightstand
 @onready var _nightstand_2: Sprite2D = $Nightstand2
+@onready var _shelf: Sprite2D = $Shelf
 @onready var _sleep_zs_root: Node2D = $SleepZsRoot
 @onready var _overlay: ColorRect = %Overlay
 @onready var _success_effect_spawner: EffectSpawner = $SuccessEffectSpawner
@@ -84,6 +86,7 @@ var _num_lives_left := 1
 
 var _alarm_spec_0 := AlarmSpec.new()
 var _alarm_spec_1 := AlarmSpec.new()
+var _alarm_spec_2 := AlarmSpec.new()
 
 
 func _ready() -> void:
@@ -101,6 +104,13 @@ func _ready() -> void:
 	_alarm_spec_1.miss_hand_offset = Vector2(50, 0)
 	_alarm_spec_1.alarm = _alarm_clock_2
 	_alarm_spec_1.miss_object = _nightstand_2
+
+	_alarm_spec_2.beep_pattern = [0, 1, 2, 3]
+	_alarm_spec_2.input_subdivision = 10
+	_alarm_spec_2.miss_response_subdivision = 12
+	_alarm_spec_2.miss_hand_offset = Vector2(50, 0)
+	_alarm_spec_2.alarm = _alarm_clock_3
+	_alarm_spec_2.miss_object = _shelf
 
 	_sleep_zs.assign(_sleep_zs_root.find_children("", "SleepZ", false, false))
 	_num_lives_left = max(1, _sleep_zs.size())
@@ -160,6 +170,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		_do_alarm_input(_alarm_spec_0)
 	elif event.is_action_pressed("snooze_1"):
 		_do_alarm_input(_alarm_spec_1)
+	elif event.is_action_pressed("snooze_2"):
+		_do_alarm_input(_alarm_spec_2)
 	elif event.is_action_pressed("ui_up"):
 		_save_checkpoint()
 	elif event.is_action_pressed("ui_down"):
@@ -425,7 +437,8 @@ func _alarm(start_subdivision: int, alarm_index: int, countdown: int = 0) -> Ala
 	var spec: AlarmSpec = null
 	match alarm_index:
 		0: spec = _alarm_spec_0
-		_: spec = _alarm_spec_1
+		1: spec = _alarm_spec_1
+		_: spec = _alarm_spec_2
 
 	return AlarmEvent.new(start_subdivision, spec, countdown)
 
@@ -458,6 +471,7 @@ func _do_next_story() -> void:
 			_queue_events([
 				_alarm(0, 0, 2),
 				_alarm(_subdiv(2), 1, 3),
+				_alarm(_subdiv(4), 2, 1)
 			])
 			_queue_next_story(_subdiv(6))
 			_story_index = 2

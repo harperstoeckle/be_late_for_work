@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://bt1xo6t2h80c1" path="res://scripts/effect_spawner.gd" id="11_ya4ey"]
 [ext_resource type="PackedScene" uid="uid://c8alxu2rjeudw" path="res://scenes/effects/success.tscn" id="12_trceg"]
 [ext_resource type="PackedScene" uid="uid://ckylwjslyans7" path="res://scenes/effects/failure.tscn" id="13_a8y0u"]
+[ext_resource type="Texture2D" uid="uid://bb4a3afqmrx86" path="res://textures/shelf.png" id="14_a8y0u"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_85g3d"]
 content_margin_left = 10.0
@@ -79,11 +80,19 @@ position = Vector2(335.99997, 378)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("8_85g3d")
 
+[node name="Shelf" type="Sprite2D" parent="." unique_id=176005732]
+position = Vector2(434.4001, 46.400005)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("14_a8y0u")
+
 [node name="AlarmClock" parent="." unique_id=907858564 instance=ExtResource("9_85g3d")]
 position = Vector2(822.00006, 321)
 
 [node name="AlarmClock2" parent="." unique_id=164746242 instance=ExtResource("9_85g3d")]
 position = Vector2(321, 318)
+
+[node name="AlarmClock3" parent="." unique_id=628270595 instance=ExtResource("9_85g3d")]
+position = Vector2(386.4001, 47.40001)
 
 [node name="BedBase" type="Sprite2D" parent="." unique_id=540930035]
 position = Vector2(583, 464.00003)
