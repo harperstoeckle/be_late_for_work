@@ -2,29 +2,29 @@
 
 [ext_resource type="Script" uid="uid://dod7boa7u822u" path="res://scripts/alarm_clock.gd" id="1_funxo"]
 [ext_resource type="Texture2D" uid="uid://bjx12s0xev8j4" path="res://textures/alarm_clock_base.png" id="2_i6n2i"]
-[ext_resource type="AudioStream" uid="uid://dvth52y5t68sx" path="res://audio/608881__leetsounds__beep.wav" id="2_mdlvu"]
-[ext_resource type="AudioStream" uid="uid://laoq50q70mre" path="res://audio/250552__druminfected__metronome.wav" id="3_32agw"]
+[ext_resource type="AudioStream" uid="uid://c6w3fyb0msp12" path="res://audio/beep.ogg" id="2_lq5we"]
 [ext_resource type="Script" uid="uid://bt1xo6t2h80c1" path="res://scripts/effect_spawner.gd" id="3_mdlvu"]
+[ext_resource type="AudioStream" uid="uid://ba2fxoan0jpwq" path="res://audio/tick.ogg" id="3_vw8ac"]
 [ext_resource type="PackedScene" uid="uid://co6v2hjfm2mh" path="res://scenes/effects/beep.tscn" id="4_32agw"]
-[ext_resource type="AudioStream" uid="uid://d3k8a2chpsol5" path="res://audio/525179__sophia_c__plastic-impact-2-hit-with-axe.wav" id="4_lq5we"]
+[ext_resource type="AudioStream" uid="uid://c118fv4efvry7" path="res://audio/snooze.ogg" id="4_c0adh"]
 
 [node name="AlarmClock" type="Node2D" unique_id=907858564]
 script = ExtResource("1_funxo")
 
 [node name="BeepPlayer" type="AudioStreamPlayer2D" parent="." unique_id=537755135]
-stream = ExtResource("2_mdlvu")
+stream = ExtResource("2_lq5we")
 volume_db = -25.0
 max_polyphony = 4
 bus = &"Sound Effects"
 
 [node name="TickPlayer" type="AudioStreamPlayer2D" parent="." unique_id=1329402158]
-stream = ExtResource("3_32agw")
+stream = ExtResource("3_vw8ac")
 volume_db = -20.0
 max_polyphony = 4
 bus = &"Sound Effects"
 
 [node name="SnoozePlayer" type="AudioStreamPlayer2D" parent="." unique_id=2060120305]
-stream = ExtResource("4_lq5we")
+stream = ExtResource("4_c0adh")
 volume_db = -5.0
 max_polyphony = 4
 bus = &"Sound Effects"

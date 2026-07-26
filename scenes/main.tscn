@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://bcq5ie2lvyknm" path="res://scripts/main.gd" id="1_o5qli"]
 [ext_resource type="AudioStream" uid="uid://b2k2v5uuuq5kl" path="res://music/a.ogg" id="2_0wfyh"]
-[ext_resource type="AudioStream" uid="uid://1ttaky17ealg" path="res://audio/249895__alienxxx__blip2.wav" id="6_choun"]
-[ext_resource type="AudioStream" uid="uid://drxytpokc1apa" path="res://audio/193676__deleted_user_2814878__gatedenied.wav" id="6_tefeu"]
+[ext_resource type="AudioStream" uid="uid://b5xqmc2eldy7h" path="res://audio/miss.ogg" id="3_trceg"]
+[ext_resource type="AudioStream" uid="uid://qlq3nwn8rfnp" path="res://audio/blip.ogg" id="4_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://dpr8arjjs4whb" path="res://textures/wallpaper.png" id="7_o6xl0"]
 [ext_resource type="Texture2D" uid="uid://c1nm57vw33doy" path="res://textures/nightstand.png" id="8_85g3d"]
 [ext_resource type="Texture2D" uid="uid://sy86bb7id4yw" path="res://textures/bed_atlas.png" id="8_choun"]
@@ -39,13 +39,13 @@ volume_db = 10.0
 bus = &"Music"
 
 [node name="MissPlayer" type="AudioStreamPlayer" parent="." unique_id=1817118186]
-stream = ExtResource("6_tefeu")
+stream = ExtResource("3_trceg")
 volume_db = -10.0
 max_polyphony = 4
 bus = &"Sound Effects"
 
 [node name="DialogueBlipPlayer" type="AudioStreamPlayer" parent="." unique_id=357540218]
-stream = ExtResource("6_choun")
+stream = ExtResource("4_a8y0u")
 volume_db = -15.0
 pitch_scale = 0.5
 bus = &"Sound Effects"
