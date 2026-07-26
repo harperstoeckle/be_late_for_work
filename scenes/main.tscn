@@ -50,6 +50,7 @@ bus = &"Sound Effects"
 stream = ExtResource("4_a8y0u")
 volume_db = -15.0
 pitch_scale = 0.5
+max_polyphony = 4
 bus = &"Sound Effects"
 
 [node name="Wallpaper" type="TextureRect" parent="." unique_id=723137512]
