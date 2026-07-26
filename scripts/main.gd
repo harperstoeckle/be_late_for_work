@@ -317,9 +317,9 @@ func _continue_dialogue() -> void:
 		_do_next_story()
 
 # All of these will be shown in order. Any currently queued dialogue will be canceled.
-func _queue_dialogue_sequence(texts: Array[String]) -> void:
-	_queued_dialogue.assign(texts)
-	_continue_dialogue()
+func _queue_dialogue_sequence(texts: Array[String], continue_dialogue: bool = true) -> void:
+	_queued_dialogue.append_array(texts)
+	if continue_dialogue: _continue_dialogue()
 
 func _fade_in_music(duration: float = -1) -> void:
 	if duration < 0: duration = music_fade_time
@@ -435,6 +435,13 @@ func _do_next_story() -> void:
 	match _story_index:
 		0:
 			_alarm_clock.set_time_left(2)
+
+			# Warning for web players to consider downloading the executable.
+			if OS.has_feature("web"):
+				_queue_dialogue_sequence(
+					["To web users: the audio quality may not be very good. If you run into timing or quality issues, it might be better to download the executable."],
+					false
+				)
 			_queue_dialogue_sequence([
 				"My alarm is about to go off",
 				"I don't want to go to work, though, so I want to snooze it instead",
