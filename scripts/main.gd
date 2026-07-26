@@ -90,12 +90,14 @@ func _ready() -> void:
 	# Describe how each alarm behaves.
 	_alarm_spec_0.beep_pattern = [0, 2, 6, 8]
 	_alarm_spec_0.input_subdivision = 10
+	_alarm_spec_0.miss_response_subdivision = 12
 	_alarm_spec_0.miss_hand_offset = Vector2(-30, 0)
 	_alarm_spec_0.alarm = _alarm_clock
 	_alarm_spec_0.miss_object = _nightstand
 
 	_alarm_spec_1.beep_pattern = [0, 6, 8]
 	_alarm_spec_1.input_subdivision = 12
+	_alarm_spec_1.miss_response_subdivision = 14
 	_alarm_spec_1.miss_hand_offset = Vector2(50, 0)
 	_alarm_spec_1.alarm = _alarm_clock_2
 	_alarm_spec_1.miss_object = _nightstand_2
@@ -197,6 +199,13 @@ func _handle_event_at_subdivision(event: Event, n: int) -> void:
 				event.spec.alarm.tick()
 		elif event.active_subdivs(n) - event.countdown * SUBDIVISIONS_PER_BEAT in event.spec.beep_pattern:
 			event.spec.alarm.beep()
+		elif not event.attempted_input and event.active_subdivs(n) - event.countdown * SUBDIVISIONS_PER_BEAT == event.spec.miss_response_subdivision:
+			# The input was missed without any attempt being made.
+			_miss_player.play()
+			_lose_life()
+			_failure_effect_spawner.spawn_at(_random_point_in_radius(event.spec.alarm.global_position, hit_effect_radius))
+			_hit_react(_man_head, Vector2(-10, 0), 0.05)
+
 
 		if event.active_subdivs(n) == event.countdown * SUBDIVISIONS_PER_BEAT:
 			event.spec.alarm.set_indicator_text("ALARM")
@@ -204,7 +213,7 @@ func _handle_event_at_subdivision(event: Event, n: int) -> void:
 # True if `event` no longer has to be active.
 func _is_event_done(event: Event, n: int) -> bool:
 	if event is AlarmEvent:
-		return event.active_subdivs(n) > event.spec.input_subdivision + event.countdown * SUBDIVISIONS_PER_BEAT
+		return event.active_subdivs(n) > event.spec.miss_response_subdivision + event.countdown * SUBDIVISIONS_PER_BEAT
 
 	return true
 
@@ -387,6 +396,8 @@ func _do_alarm_input(spec: AlarmSpec) -> void:
 	var alarm_found := false
 	for e in _active_events:
 		if e is AlarmEvent and e.spec == spec:
+			e.attempted_input = true
+
 			var cur_total_playback_time := _get_total_playback_time()
 			match _get_accuracy(e.start_subdivision + e.countdown * SUBDIVISIONS_PER_BEAT + spec.input_subdivision, cur_total_playback_time):
 				InputAccuracy.GOOD:
@@ -462,6 +473,8 @@ func _do_next_story() -> void:
 class AlarmSpec:
 	var beep_pattern: Array[int] = []
 	var input_subdivision: int = 0
+	# The subdiv where a miss effect will be played if there were no attempts.
+	var miss_response_subdivision: int = 0
 	var hit_hand_offset: Vector2 = Vector2(20, -15)
 	var miss_hand_offset: Vector2 = Vector2.ZERO
 	var miss_knockback: Vector2 = Vector2(0, 10)
@@ -490,6 +503,9 @@ class AlarmEvent extends Event:
 
 	# Number of ticks to count down.
 	var countdown: int = 0
+
+	# Set to true when the player attempts to put in an input for this alarm (even if it failed).
+	var attempted_input: bool = false
 
 	func _init(p_start_subdivision: int, p_spec: AlarmSpec, p_countdown: int = 0) -> void:
 		super(p_start_subdivision)
